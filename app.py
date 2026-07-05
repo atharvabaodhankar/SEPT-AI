@@ -917,6 +917,10 @@ def register():
             admin_secret=request.form.get("admin_secret","").strip()
             expected_secret=os.getenv("ADMIN_SECRET_KEY","")
             if not expected_secret or admin_secret!=expected_secret: error="Invalid Admin Key"; return render_template('register.html',error=error)
+        if role=="teacher":
+            teacher_secret=request.form.get("teacher_secret","").strip()
+            expected_teacher_secret=os.getenv("TEACHER_SECRET_KEY","")
+            if not expected_teacher_secret or teacher_secret!=expected_teacher_secret: error="Invalid Teacher Key"; return render_template('register.html',error=error)
         hashed=generate_password_hash(password)
         user=User(username=username,password=hashed,role=role)
         db.session.add(user); db.session.commit()

@@ -421,8 +421,8 @@
       color: var(--blue-light);
     }
 
-    /* admin key hidden by default */
-    #admin-key-field {
+    /* admin/teacher key hidden by default */
+    #admin-key-field, #teacher-key-field {
       display: none;
     }
 
@@ -593,6 +593,14 @@
           </div>
         </div>
 
+        <div class="field" id="teacher-key-field">
+          <label for="teacher_secret">Teacher Secret Key</label>
+          <div class="input-wrap">
+            <i class="fas fa-key input-icon"></i>
+            <input type="password" id="teacher_secret" name="teacher_secret" placeholder="Enter teacher secret key" />
+          </div>
+        </div>
+
         <button type="submit" class="btn-submit">
           <i class="fas fa-user-plus"></i> Create Account
         </button>
@@ -619,6 +627,8 @@
     document.getElementById('role').addEventListener('change', function () {
       document.getElementById('admin-key-field').style.display =
         this.value === 'admin' ? 'block' : 'none';
+      document.getElementById('teacher-key-field').style.display =
+        this.value === 'teacher' ? 'block' : 'none';
     });
   </script>
   <script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
