@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Chatbot</title>
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg,#1f2937,#111827);
+    color: #f9fafb;
+    padding: 40px;
+}
+.card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 700px;
+    margin: auto;
+}
+.chat-box {
+    height: 400px;
+    overflow-y: scroll;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: rgba(0,0,0,0.2);
+}
+.message { margin: 5px 0; }
+.user { color: #60a5fa; }
+.bot { color: #34d399; }
+input, button { padding: 10px; border-radius: 6px; border: none; }
+button { background: #3b82f6; color: white; cursor: pointer; }
+button:hover { background: #2563eb; }
+</style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+<div class="card">
+    <h2>📚 AI Chatbot</h2>
+    <div class="chat-box" id="chat-box">
+        {% if response %}
+        <div class="message user">You: {{ request.form.get('message') }}</div>
+        <div class="message bot">Bot: {{ response }}</div>
+        {% else %}
+        <div class="message bot">Hello! Ask me any question related to your course.</div>
+        {% endif %}
+    </div>
+
+    <form method="POST">
+        <input type="text" name="message" placeholder="Type your question..." required style="width:70%;">
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+<script>
+let chatBox = document.getElementById("chat-box");
+chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

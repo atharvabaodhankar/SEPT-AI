@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Practicals</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.6);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background: #2c2c2c;
+        }
+
+        th {
+            color: #90caf9;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        tr {
+            border-bottom: 1px solid #333;
+        }
+
+        tr:hover {
+            background: #2a2a2a;
+        }
+
+        input[type="number"] {
+            padding: 6px;
+            width: 70px;
+            border-radius: 6px;
+            border: none;
+            background: #2c2c2c;
+            color: white;
+        }
+
+        button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            background: #4caf50;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #66bb6a;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .pending {
+            color: #ffb74d;
+        }
+
+        .checked {
+            color: #81c784;
+        }
+
+        .back-btn {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-btn a {
+            text-decoration: none;
+            background: #2196f3;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+        }
+
+        .back-btn a:hover {
+            background: #42a5f5;
+        }
+    </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+    <h2>📘 Practical Submissions</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Student</th>
+                <th>Practical</th>
+                <th>Status</th>
+                <th>Marks</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for sub in submissions %}
+            <tr>
+                <td>{{ sub.id }}</td>
+
+                <td>{{ sub.student_name }}</td>
+
+                <td>{{ sub.practical_title }}</td>
+
+                <td class="status">
+                    {% if sub.status == 'checked' %}
+                        <span class="checked">✔ Checked</span>
+                    {% else %}
+                        <span class="pending">⏳ Pending</span>
+                    {% endif %}
+                </td>
+
+                <td>{{ sub.marks or "-" }}</td>
+
+                <td>
+                    <form action="{{ url_for('mark_practical', sid=sub.id) }}" method="POST">
+                        <input type="number" name="marks" min="0" max="100" required>
+                        <button type="submit">Submit</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="back-btn">
+        <a href="{{ url_for('teacher_dashboard') }}">⬅ Back to Dashboard</a>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

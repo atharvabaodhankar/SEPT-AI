@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance</title>
+
+<style>
+    body {
+        background:#0f172a;
+        color:white;
+        font-family:'Poppins', sans-serif;
+        padding:20px;
+    }
+    .card {
+        background:#1e293b;
+        padding:20px;
+        border-radius:12px;
+        border:1px solid #334155;
+        margin-bottom:20px;
+    }
+    .btn {
+        background:#1e40af;
+        color:white;
+        padding:8px 15px;
+        border-radius:6px;
+        text-decoration:none;
+    }
+    .btn:hover { background:#1d4ed8; }
+    select, input {
+        width:100%;
+        padding:10px;
+        border-radius:6px;
+        margin-bottom:10px;
+    }
+    table {
+        width:100%;
+        border-collapse:collapse;
+    }
+    thead { background:#1e40af; }
+    th, td {
+        padding:10px;
+        border-bottom:1px solid #334155;
+    }
+</style>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+
+<a href="/teacher_dashboard" class="btn">← Back</a>
+
+<h2>📅 Attendance</h2><hr>
+
+<div class="card">
+    <h5>Mark Attendance</h5>
+    <form method="POST" action="/attendance/mark">
+        <select name="user_id">
+            {% for s in students %}
+            <option value="{{ s.id }}">{{ s.username }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="status">
+            <option value="Present">Present</option>
+            <option value="Absent">Absent</option>
+            <option value="Late">Late</option>
+            <option value="Leave">Leave</option>
+        </select>
+
+        <button class="btn">Submit</button>
+    </form>
+</div>
+
+<div class="card">
+    <h5>Recent Attendance Records</h5>
+    <table>
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in attendance %}
+            <tr>
+                <td>{{ a.user_id }}</td>
+                <td>{{ a.status }}</td>
+                <td>{{ a.date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

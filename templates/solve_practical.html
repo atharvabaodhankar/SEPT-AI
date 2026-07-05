@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solve Practical</title>
+<style>
+body{max-width:800px;margin:0 auto;padding:16px;box-sizing:border-box}
+textarea{width:100%;box-sizing:border-box;font-family:monospace}
+button{width:100%;padding:12px;margin-top:8px}
+@media(min-width:600px){button{width:auto;padding:10px 24px}}
+</style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+<h3>{{ practical.title }}</h3>
+<p>{{ practical.task }}</p>
+
+<form method="post">
+<textarea name="code" rows="10" placeholder="Write C code"></textarea>
+<textarea name="output" rows="4" placeholder="Output"></textarea>
+
+<button type="submit">Submit Practical</button>
+</form>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

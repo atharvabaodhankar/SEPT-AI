@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Discussion Forum — SEPT AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0a0f1e;--navy-2:#0d1526;--navy-3:#111d35;
+  --blue:#1d4ed8;--blue-light:#3b82f6;
+  --cyan:#06b6d4;--cyan-light:#22d3ee;
+  --slate:#94a3b8;--slate-light:#cbd5e1;
+  --white:#f8fafc;
+  --green:#10b981;--green-light:#34d399;
+  --gold:#f59e0b;
+  --purple:#8b5cf6;--purple-light:#a78bfa;
+  --danger:#f87171;
+  --grad-main:linear-gradient(135deg,#1d4ed8 0%,#06b6d4 100%);
+  --border:rgba(59,130,246,0.15);--border-soft:rgba(255,255,255,0.06);
+  --glow:0 0 40px rgba(29,78,216,0.2);
+  --radius:14px;--radius-lg:20px;
+  --sidebar-w:256px;
+  --transition:all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+html,body{height:100%}
+body{font-family:'Inter',sans-serif;background:var(--navy);color:var(--white);display:flex;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(29,78,216,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(29,78,216,0.04) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--navy)}
+::-webkit-scrollbar-thumb{background:var(--blue);border-radius:3px}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--navy-2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto}
+.sidebar-brand{display:flex;align-items:center;gap:11px;padding:26px 22px 22px;text-decoration:none;border-bottom:1px solid var(--border-soft)}
+.brand-icon{width:36px;height:36px;background:var(--grad-main);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#fff;box-shadow:0 4px 14px rgba(29,78,216,.4);flex-shrink:0}
+.brand-text{font-size:1rem;font-weight:800;letter-spacing:-.4px}
+.brand-text em{font-style:normal;background:var(--grad-main);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.sb-label{font-size:.62rem;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--slate);padding:18px 22px 6px}
+.sb-nav{flex:1;padding:6px 10px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;font-size:.85rem;font-weight:500;color:var(--slate-light);text-decoration:none;transition:var(--transition);margin-bottom:2px}
+.nav-item i{width:17px;text-align:center;font-size:.85rem}
+.nav-item:hover{background:rgba(59,130,246,.1);color:var(--white)}
+.nav-item.active{background:rgba(29,78,216,.2);color:var(--white);border:1px solid rgba(59,130,246,.25)}
+.nav-item.active i{color:var(--blue-light)}
+.nav-item.danger:hover{background:rgba(248,113,113,.1);color:var(--danger)}
+.sb-footer{padding:14px 22px;border-top:1px solid var(--border-soft)}
+.user-chip{display:flex;align-items:center;gap:10px}
+.user-av{width:32px;height:32px;background:var(--grad-main);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;flex-shrink:0}
+.user-info h6{font-size:.78rem;font-weight:700;color:var(--white)}
+.user-info span{font-size:.68rem;color:var(--slate);display:flex;align-items:center;gap:4px}
+.user-info span::before{content:'';width:5px;height:5px;background:var(--green);border-radius:50%;display:inline-block}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;position:relative;z-index:1}
+
+/* TOPBAR */
+.topbar{height:64px;background:var(--navy-2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50;flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:14px}
+.topbar-icon{width:38px;height:38px;background:var(--grad-main);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#fff;flex-shrink:0}
+.topbar-left h1{font-size:1.05rem;font-weight:700;letter-spacing:-.3px}
+.topbar-left p{font-size:.72rem;color:var(--slate);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.count-pill{display:flex;align-items:center;gap:7px;background:rgba(29,78,216,.12);border:1px solid rgba(59,130,246,.25);border-radius:50px;padding:5px 12px;font-size:.72rem;font-weight:600;color:var(--blue-light)}
+.topbar-btn{display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:8px;font-size:.78rem;font-weight:600;text-decoration:none;transition:var(--transition);border:1px solid var(--border-soft);background:rgba(255,255,255,.05);color:var(--slate-light)}
+.topbar-btn:hover{background:rgba(59,130,246,.1);color:var(--white)}
+
+/* CONTENT */
+.content{flex:1;padding:28px;display:flex;gap:24px;align-items:flex-start;overflow-y:auto}
+
+/* LEFT: FEED */
+.feed-col{flex:1;display:flex;flex-direction:column;gap:16px;min-width:0}
+
+/* POST FORM */
+.post-form-panel{background:var(--navy-2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.pf-header{padding:16px 20px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:10px}
+.pf-icon{width:32px;height:32px;border-radius:9px;background:rgba(29,78,216,.2);color:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+.pf-header h2{font-size:.9rem;font-weight:700;color:var(--white)}
+.pf-header p{font-size:.72rem;color:var(--slate);margin-top:1px}
+.pf-body{padding:18px 20px}
+.pf-body textarea{width:100%;padding:13px 16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);color:var(--white);font-size:.875rem;font-family:'Inter',sans-serif;outline:none;resize:none;min-height:90px;line-height:1.6;transition:var(--transition)}
+.pf-body textarea::placeholder{color:rgba(148,163,184,.45)}
+.pf-body textarea:focus{border-color:var(--blue-light);background:rgba(59,130,246,.06);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.pf-footer{padding:0 20px 18px;display:flex;align-items:center;justify-content:space-between}
+.char-hint{font-size:.72rem;color:var(--slate)}
+.btn-post{display:inline-flex;align-items:center;gap:8px;padding:10px 24px;background:var(--grad-main);border:none;border-radius:10px;color:#fff;font-size:.85rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;box-shadow:0 4px 16px rgba(29,78,216,.35);transition:var(--transition)}
+.btn-post:hover{transform:translateY(-1px);box-shadow:0 7px 22px rgba(29,78,216,.5)}
+
+/* FILTER BAR */
+.filter-bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.filter-bar-left{display:flex;align-items:center;gap:8px}
+.filter-label{font-size:.78rem;font-weight:600;color:var(--slate)}
+.filter-btn{padding:5px 14px;border-radius:50px;background:rgba(255,255,255,.04);border:1px solid var(--border-soft);color:var(--slate-light);font-size:.75rem;font-weight:600;cursor:pointer;transition:var(--transition);font-family:'Inter',sans-serif}
+.filter-btn:hover,.filter-btn.active{background:rgba(29,78,216,.2);border-color:rgba(59,130,246,.3);color:var(--white)}
+.search-wrap{position:relative}
+.search-wrap i{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--slate);font-size:.75rem;pointer-events:none}
+.search-wrap input{padding:7px 12px 7px 30px;background:rgba(255,255,255,.04);border:1px solid var(--border-soft);border-radius:50px;color:var(--white);font-size:.78rem;font-family:'Inter',sans-serif;outline:none;width:180px;transition:var(--transition)}
+.search-wrap input::placeholder{color:rgba(148,163,184,.4)}
+.search-wrap input:focus{border-color:var(--blue-light);background:rgba(59,130,246,.06);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+
+/* DISCUSSION CARDS */
+.discussion-list{display:flex;flex-direction:column;gap:12px}
+
+.disc-card{background:var(--navy-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;transition:var(--transition);position:relative;overflow:hidden;animation:cardIn .25s ease}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.disc-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--grad-main);opacity:0;transition:var(--transition)}
+.disc-card:hover{border-color:rgba(59,130,246,.3);transform:translateY(-2px);box-shadow:var(--glow)}
+.disc-card:hover::before{opacity:1}
+
+.disc-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.disc-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;flex-shrink:0}
+.disc-meta h4{font-size:.85rem;font-weight:700;color:var(--white)}
+.disc-meta span{font-size:.7rem;color:var(--slate)}
+.disc-num{margin-left:auto;width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid var(--border-soft);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:var(--slate)}
+
+.disc-body{font-size:.875rem;color:var(--slate-light);line-height:1.65;padding-left:42px}
+
+.disc-footer{display:flex;align-items:center;gap:12px;margin-top:12px;padding-left:42px}
+.disc-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;background:rgba(29,78,216,.12);border:1px solid rgba(59,130,246,.2);border-radius:50px;font-size:.68rem;font-weight:600;color:var(--blue-light)}
+
+/* empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:14px;text-align:center}
+.empty-icon{width:64px;height:64px;background:rgba(59,130,246,.08);border:1px solid var(--border);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--blue-light)}
+.empty-state h3{font-size:1rem;font-weight:700;color:var(--white)}
+.empty-state p{font-size:.82rem;color:var(--slate);max-width:260px;line-height:1.6}
+
+/* RIGHT SIDEBAR */
+.side-col{width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:16px}
+.side-panel{background:var(--navy-2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.sp-header{padding:14px 16px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:9px}
+.sp-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0}
+.spi-blue{background:rgba(29,78,216,.2);color:var(--blue-light)}
+.spi-green{background:rgba(16,185,129,.2);color:var(--green)}
+.spi-gold{background:rgba(245,158,11,.2);color:var(--gold)}
+.sp-header h3{font-size:.82rem;font-weight:700;color:var(--white)}
+.sp-body{padding:14px 16px}
+
+.stat-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.stat-row:last-child{border-bottom:none}
+.stat-row-label{font-size:.78rem;color:var(--slate);display:flex;align-items:center;gap:7px}
+.stat-row-label i{width:14px;text-align:center;font-size:.75rem}
+.stat-row-val{font-size:.82rem;font-weight:700;color:var(--white)}
+
+.ql-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;text-decoration:none;color:var(--slate-light);font-size:.78rem;font-weight:500;transition:var(--transition);margin-bottom:4px}
+.ql-item:last-child{margin-bottom:0}
+.ql-item:hover{background:rgba(59,130,246,.1);color:var(--white)}
+.ql-item i{width:15px;text-align:center;font-size:.78rem}
+
+/* flash */
+.flash-bar{display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:10px;font-size:.82rem;font-weight:500;margin-bottom:16px}
+.flash-success{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:var(--green-light)}
+
+@media(max-width:1000px){.side-col{display:none}}
+@media(max-width:700px){.sidebar{transform:translateX(-100%)}.main{margin-left:0}.content{padding:16px}.topbar{padding:0 16px}}
+
+/* ── RESPONSIVE: extra small-screen tweaks ── */
+@media(max-width:480px){
+  .stats-row{grid-template-columns:1fr !important}
+  .panel-body{padding:14px}
+  .panel-header{padding:14px}
+  table{min-width:520px}
+}
+
+/* ── RESPONSIVE: fix topbar clipping/overlap on small screens ── */
+@media(max-width:700px){
+  .topbar{height:auto !important;min-height:60px;padding:10px 16px !important;flex-wrap:nowrap;gap:8px}
+  .topbar-left{min-width:0;flex:1 1 auto;overflow:hidden}
+  .topbar-left h1{font-size:.92rem !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbar-left p{display:block !important;font-size:.68rem !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;width:100%}
+  .topbar-right{flex-shrink:0}
+  .topbar-badge, .tb-primary, .tb-ghost, .topbar-btn{padding:6px 10px !important;font-size:.7rem !important}
+  .sept-hamburger-btn{margin-right:4px}
+}
+@media(max-width:420px){
+  .topbar-right .topbar-badge span, .topbar-right .tb-ghost span{display:none}
+}
+
+/* ── RESPONSIVE: real fix for content pushed off-screen ──
+   Flex/grid children default to min-width:auto, so a wide table
+   or button row forces the whole column wider than the viewport
+   instead of scrolling internally. Setting min-width:0 lets every
+   container in the chain shrink properly; .table-wrap's own
+   overflow-x:auto then does the scrolling as intended. */
+.main, .content, .panel, .panel-body, .two-col, .two-col > *,
+.dashboard-grid, .dashboard-grid > *, .right-col, .right-col > *,
+.class-grid, .class-grid > *, .right-panel, .right-panel > *,
+.lb-grid, .lb-grid > *, .side-col, .side-col > *, .full-col,
+.stats-row, .stats-row > * {
+  min-width: 0;
+}
+.table-wrap { max-width: 100%; }
+</style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="/" class="sidebar-brand">
+    <div class="brand-icon"><i class="fas fa-brain"></i></div>
+    <span class="brand-text">SEPT <em>AI</em></span>
+  </a>
+  <div class="sb-label">Navigation</div>
+  <nav class="sb-nav">
+    <a class="nav-item" href="{{ url_for('student_dashboard') }}"><i class="fas fa-gauge-high"></i> Dashboard</a>
+    <a class="nav-item active" href="{{ url_for('discussion') }}"><i class="fas fa-message"></i> Discussion</a>
+    <a class="nav-item" href="{{ url_for('team_chat') }}"><i class="fas fa-comments"></i> Team Chat</a>
+    <a class="nav-item" href="{{ url_for('online_class') }}"><i class="fas fa-video"></i> Online Class</a>
+    <a class="nav-item" href="{{ url_for('chatbot_page') }}"><i class="fas fa-robot"></i> AI Assistant</a>
+    <a class="nav-item" href="{{ url_for('leaderboard') }}"><i class="fas fa-trophy"></i> Leaderboard</a>
+    <div class="sb-label" style="padding-left:0;margin-top:6px">Account</div>
+    <a class="nav-item danger" href="{{ url_for('logout') }}"><i class="fas fa-right-from-bracket"></i> Logout</a>
+  </nav>
+  <div class="sb-footer">
+    <div class="user-chip">
+      <div class="user-av">{{ session.get('username','?')[0].upper() }}</div>
+      <div class="user-info">
+        <h6>{{ session.get('username','Guest') }}</h6>
+        <span>Online</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-icon"><i class="fas fa-message"></i></div>
+      <div>
+        <h1>Discussion Forum</h1>
+        <p>Ask questions, share knowledge with your class</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="count-pill"><i class="fas fa-comments"></i> {{ discussions | length }} posts</div>
+      <a href="{{ url_for('student_dashboard') }}" class="topbar-btn"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- FEED COLUMN -->
+    <div class="feed-col">
+
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="flash-bar flash-success"><i class="fas fa-check-circle"></i> {{ messages[-1] }}</div>
+        {% endif %}
+      {% endwith %}
+
+      <!-- POST FORM -->
+      <div class="post-form-panel">
+        <div class="pf-header">
+          <div class="pf-icon"><i class="fas fa-pen-to-square"></i></div>
+          <div>
+            <h2>Ask a Question</h2>
+            <p>Post your question to the class</p>
+          </div>
+        </div>
+        <form method="POST" action="{{ url_for('discussion') }}">
+          <div class="pf-body">
+            <textarea name="question" id="questionInput" placeholder="What's on your mind? Ask anything related to your course..." required
+              oninput="updateChar(this)"></textarea>
+          </div>
+          <div class="pf-footer">
+            <span class="char-hint"><span id="charCount">0</span> characters</span>
+            <button type="submit" class="btn-post"><i class="fas fa-paper-plane"></i> Post Question</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar">
+        <div class="filter-bar-left">
+          <span class="filter-label">Filter:</span>
+          <button class="filter-btn active" onclick="filterPosts('all',this)">All</button>
+          <button class="filter-btn" onclick="filterPosts('mine',this)">Mine</button>
+        </div>
+        <div class="search-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Search posts..." oninput="searchPosts(this.value)">
+        </div>
+      </div>
+
+      <!-- DISCUSSION LIST -->
+      <div class="discussion-list" id="discussionList">
+        {% if discussions %}
+          {% for d in discussions %}
+          <div class="disc-card" data-user="{{ d.username }}" data-text="{{ d.question | lower }}">
+            <div class="disc-header">
+              <div class="disc-av" data-colour="{{ loop.index0 % 5 }}">
+                {{ d.username[0].upper() }}
+              </div>
+              <div class="disc-meta">
+                <h4>{{ d.username }}</h4>
+                <span>
+                  {% if d.timestamp %}
+                    {{ d.timestamp.strftime('%d %b %Y, %H:%M') }}
+                  {% else %}
+                    Just now
+                  {% endif %}
+                </span>
+              </div>
+              <div class="disc-num">#{{ loop.revindex }}</div>
+            </div>
+            <div class="disc-body">{{ d.question }}</div>
+            <div class="disc-footer">
+              <span class="disc-tag"><i class="fas fa-tag"></i> Question</span>
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">
+            <div class="empty-icon"><i class="fas fa-comments"></i></div>
+            <h3>No discussions yet</h3>
+            <p>Be the first to ask a question and start the conversation.</p>
+          </div>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div class="side-col">
+
+      <!-- Stats -->
+      <div class="side-panel">
+        <div class="sp-header">
+          <div class="sp-icon spi-blue"><i class="fas fa-chart-bar"></i></div>
+          <h3>Forum Stats</h3>
+        </div>
+        <div class="sp-body">
+          <div class="stat-row">
+            <span class="stat-row-label"><i class="fas fa-comments"></i> Total Posts</span>
+            <span class="stat-row-val">{{ discussions | length }}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-row-label"><i class="fas fa-users"></i> Contributors</span>
+            <span class="stat-row-val">{{ discussions | map(attribute='username') | unique | list | length }}</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-row-label"><i class="fas fa-clock"></i> Latest</span>
+            <span class="stat-row-val">
+              {% if discussions %}
+                {{ discussions[0].timestamp.strftime('%H:%M') if discussions[0].timestamp else '—' }}
+              {% else %}—{% endif %}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Guidelines -->
+      <div class="side-panel">
+        <div class="sp-header">
+          <div class="sp-icon spi-gold"><i class="fas fa-lightbulb"></i></div>
+          <h3>Guidelines</h3>
+        </div>
+        <div class="sp-body">
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <div style="display:flex;gap:9px;font-size:.78rem;color:var(--slate-light)">
+              <span style="color:var(--blue-light);font-weight:700;flex-shrink:0">1.</span> Be respectful and constructive
+            </div>
+            <div style="display:flex;gap:9px;font-size:.78rem;color:var(--slate-light)">
+              <span style="color:var(--blue-light);font-weight:700;flex-shrink:0">2.</span> Search before posting duplicates
+            </div>
+            <div style="display:flex;gap:9px;font-size:.78rem;color:var(--slate-light)">
+              <span style="color:var(--blue-light);font-weight:700;flex-shrink:0">3.</span> Keep questions course-related
+            </div>
+            <div style="display:flex;gap:9px;font-size:.78rem;color:var(--slate-light)">
+              <span style="color:var(--blue-light);font-weight:700;flex-shrink:0">4.</span> Use clear, specific language
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="side-panel">
+        <div class="sp-header">
+          <div class="sp-icon spi-green"><i class="fas fa-bolt"></i></div>
+          <h3>Quick Links</h3>
+        </div>
+        <div class="sp-body">
+          <a href="{{ url_for('team_chat') }}" class="ql-item"><i class="fas fa-comments" style="color:var(--blue-light)"></i> Team Chat</a>
+          <a href="{{ url_for('online_class') }}" class="ql-item"><i class="fas fa-video" style="color:var(--danger)"></i> Online Class</a>
+          <a href="{{ url_for('chatbot_page') }}" class="ql-item"><i class="fas fa-robot" style="color:var(--purple-light)"></i> AI Assistant</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const currentUser = "{{ session.get('username','') }}";
+const avColours = ['#1d4ed8','#06b6d4','#8b5cf6','#10b981','#f59e0b'];
+document.querySelectorAll('.disc-av[data-colour]').forEach(el => {
+  el.style.background = avColours[parseInt(el.dataset.colour)];
+});
+
+function updateChar(el) {
+  document.getElementById('charCount').textContent = el.value.length;
+}
+
+function filterPosts(type, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.disc-card').forEach(card => {
+    if (type === 'mine') {
+      card.style.display = card.dataset.user === currentUser ? '' : 'none';
+    } else {
+      card.style.display = '';
+    }
+  });
+}
+
+function searchPosts(val) {
+  const q = val.toLowerCase();
+  document.querySelectorAll('.disc-card').forEach(card => {
+    card.style.display = card.dataset.text.includes(q) ? '' : 'none';
+  });
+}
+</script>
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+
+</body>
+</html>
+</html>

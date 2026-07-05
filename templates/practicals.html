@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practicals - {{ student.username }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    padding: 40px;
+    background: linear-gradient(135deg,#1f2937,#111827);
+    color: #f9fafb;
+    max-width: 1200px;
+    margin: auto;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 30px;
+    padding: 20px 30px;
+    background: linear-gradient(90deg,#4facfe,#00f2fe);
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    color: #fff;
+}
+header h2 { font-size: 28px; margin:0; }
+a.logout-link {
+    padding: 10px 22px;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+a.logout-link:hover { background: rgba(255,255,255,0.4); }
+.card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    padding: 28px 32px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    margin-bottom: 30px;
+    transition: all 0.4s ease;
+}
+.card:hover { transform: translateY(-6px) scale(1.01); }
+.card h3 { margin-top:0; font-size:22px; margin-bottom:15px; color:#f1f5f9; }
+.btn-modern {
+    display: inline-block;
+    padding: 12px 22px;
+    font-weight: 600;
+    font-size: 15px;
+    border-radius: 16px;
+    text-decoration: none;
+    color: #fff;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+.btn-modern:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.35); }
+</style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+
+<header>
+  <h2>📘 Practicals - {{ student.username }}</h2>
+  <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+</header>
+
+<h2>All Practicals</h2>
+<p>Total Practicals: {{ practicals|length }}</p>
+
+{% for p in practicals %}
+<div class="card">
+    <h3>{{ p.subject }} - Practical {{ p.practical_no }}: {{ p.title }}</h3>
+    <p><b>CO:</b> {{ p.co }}</p>
+    <p><b>LLO:</b> {{ p.llo }}</p>
+    <p>{{ p.task }}</p>
+    <a href="{{ url_for('start_practical', practical_id=p.id) }}" class="btn-modern">Start Practical</a>
+</div>
+{% endfor %}
+
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

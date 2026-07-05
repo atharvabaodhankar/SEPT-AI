@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SEPT AI — Smart Education Progress Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0a0f1e;
+      --navy-2:     #0d1526;
+      --navy-3:     #111d35;
+      --navy-4:     #162040;
+      --blue:       #1d4ed8;
+      --blue-light: #3b82f6;
+      --cyan:       #06b6d4;
+      --cyan-light: #22d3ee;
+      --slate:      #94a3b8;
+      --slate-light:#cbd5e1;
+      --white:      #f8fafc;
+      --gold:       #f59e0b;
+      --green:      #10b981;
+      --purple:     #8b5cf6;
+      --grad-main:  linear-gradient(135deg, #1d4ed8 0%, #06b6d4 100%);
+      --grad-card:  linear-gradient(145deg, #111d35, #0d1526);
+      --border:     rgba(59,130,246,0.15);
+      --glow-blue:  0 0 40px rgba(29,78,216,0.25);
+      --glow-cyan:  0 0 40px rgba(6,182,212,0.2);
+      --radius:     16px;
+      --radius-lg:  24px;
+      --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--navy); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6%;
+      height: 70px;
+      background: rgba(245, 238, 238, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--grad-main);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      color: #fff;
+      box-shadow: var(--glow-blue);
+    }
+    .nav-logo span {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--white);
+    }
+    .nav-logo span em {
+      font-style: normal;
+      background: var(--grad-main);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--slate-light);
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+    .nav-links a:hover { color: var(--white); background: rgba(255,255,255,0.06); }
+    .nav-links .btn-nav {
+      background: var(--grad-main);
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(29,78,216,0.35);
+    }
+    .nav-links .btn-nav:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(29,78,216,0.5);
+      background: rgba(255,255,255,0.06);
+      color: var(--white);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 6% 80px;
+      overflow: hidden;
+    }
+
+    /* animated grid background */
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(29,78,216,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(29,78,216,0.07) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+    }
+
+    /* glowing orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(29,78,216,0.3), transparent 70%);
+      top: -100px; left: -100px;
+      animation: float 8s ease-in-out infinite;
+    }
+    .orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(6,182,212,0.2), transparent 70%);
+      bottom: -80px; right: -80px;
+      animation: float 10s ease-in-out infinite reverse;
+    }
+    .orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(139,92,246,0.15), transparent 70%);
+      top: 40%; left: 60%;
+      animation: float 12s ease-in-out infinite 2s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.05); }
+    }
+
+    .hero-content { position: relative; z-index: 1; max-width: 860px; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(29,78,216,0.15);
+      border: 1px solid rgba(59,130,246,0.3);
+      color: var(--cyan-light);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 6px 16px;
+      border-radius: 50px;
+      margin-bottom: 28px;
+      text-transform: uppercase;
+    }
+    .hero-badge i { font-size: 0.75rem; color: var(--gold); }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 24px;
+      color: var(--white);
+    }
+    .hero h1 .grad-text {
+      background: var(--grad-main);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--slate);
+      max-width: 620px;
+      margin: 0 auto 44px;
+      font-weight: 400;
+      line-height: 1.75;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 64px;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--grad-main);
+      color: #fff;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      box-shadow: 0 8px 30px rgba(29,78,216,0.4);
+      transition: var(--transition);
+      letter-spacing: 0.2px;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(29,78,216,0.55);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--slate-light);
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      border: 1px solid rgba(148,163,184,0.25);
+      transition: var(--transition);
+    }
+    .btn-outline:hover {
+      border-color: var(--blue-light);
+      color: var(--white);
+      background: rgba(59,130,246,0.08);
+      transform: translateY(-3px);
+    }
+
+    /* hero stats */
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .stat-item { text-align: center; }
+    .stat-item .stat-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: var(--grad-main);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+    }
+    .stat-item .stat-label {
+      font-size: 0.78rem;
+      color: var(--slate);
+      font-weight: 500;
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stat-divider {
+      width: 1px;
+      background: var(--border);
+      align-self: stretch;
+    }
+
+    /* ── SECTION SHARED ── */
+    section { position: relative; z-index: 1; }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--cyan);
+      margin-bottom: 14px;
+    }
+    .section-label::before {
+      content: '';
+      width: 20px; height: 2px;
+      background: var(--cyan);
+      border-radius: 2px;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.2;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+    .section-title span {
+      background: var(--grad-main);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .section-sub {
+      font-size: 1rem;
+      color: var(--slate);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    /* ── FEATURES ── */
+    .features-section {
+      padding: 100px 6%;
+      background: var(--navy-2);
+    }
+    .features-header { text-align: center; margin-bottom: 64px; }
+    .features-header .section-sub { margin: 0 auto; }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: var(--grad-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 30px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--grad-main);
+      opacity: 0;
+      transition: var(--transition);
+    }
+    .feature-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(59,130,246,0.35);
+      box-shadow: var(--glow-blue);
+    }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 22px;
+    }
+    .icon-blue   { background: rgba(29,78,216,0.2);  color: var(--blue-light); }
+    .icon-cyan   { background: rgba(6,182,212,0.2);  color: var(--cyan); }
+    .icon-purple { background: rgba(139,92,246,0.2); color: var(--purple); }
+    .icon-green  { background: rgba(16,185,129,0.2); color: var(--green); }
+    .icon-gold   { background: rgba(245,158,11,0.2); color: var(--gold); }
+    .icon-pink   { background: rgba(236,72,153,0.2); color: #ec4899; }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+    .feature-card p {
+      font-size: 0.9rem;
+      color: var(--slate);
+      line-height: 1.65;
+    }
+
+    /* ── HOW IT WORKS ── */
+    .how-section {
+      padding: 100px 6%;
+      background: var(--navy);
+    }
+    .how-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .how-steps { display: flex; flex-direction: column; gap: 32px; }
+    .step {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: var(--grad-main);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(29,78,216,0.35);
+    }
+    .step-body h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+    .step-body p { font-size: 0.875rem; color: var(--slate); line-height: 1.65; }
+
+    .how-visual {
+      background: var(--grad-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .visual-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .visual-card .vc-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .visual-card .vc-text h5 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 3px;
+    }
+    .visual-card .vc-text p { font-size: 0.78rem; color: var(--slate); }
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.06);
+      border-radius: 50px;
+      height: 6px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 50px;
+      background: var(--grad-main);
+    }
+
+    /* ── LANGUAGES ── */
+    .lang-section {
+      padding: 80px 6%;
+      background: var(--navy-2);
+      text-align: center;
+    }
+    .lang-grid {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 48px;
+    }
+    .lang-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--navy-3);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 12px 24px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--slate-light);
+      transition: var(--transition);
+    }
+    .lang-pill:hover {
+      border-color: var(--blue-light);
+      color: var(--white);
+      background: rgba(59,130,246,0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(29,78,216,0.2);
+    }
+    .lang-pill i { font-size: 1.1rem; }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials-section {
+      padding: 100px 6%;
+      background: var(--navy);
+    }
+    .testimonials-header { text-align: center; margin-bottom: 64px; }
+    .testimonials-header .section-sub { margin: 0 auto; }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .testimonial-card {
+      background: var(--grad-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      transition: var(--transition);
+      position: relative;
+    }
+    .testimonial-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(59,130,246,0.3);
+      box-shadow: var(--glow-blue);
+    }
+    .quote-icon {
+      font-size: 2rem;
+      color: var(--blue-light);
+      opacity: 0.4;
+      margin-bottom: 16px;
+      line-height: 1;
+    }
+    .testimonial-card p {
+      font-size: 0.9rem;
+      color: var(--slate-light);
+      line-height: 1.75;
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .author-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .av-blue   { background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
+    .av-cyan   { background: linear-gradient(135deg, #0891b2, #06b6d4); }
+    .av-purple { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+
+    .author-info h5 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .author-info span {
+      font-size: 0.78rem;
+      color: var(--slate);
+    }
+    .stars { color: var(--gold); font-size: 0.75rem; margin-bottom: 2px; }
+
+    /* ── CTA BANNER ── */
+    .cta-section {
+      padding: 80px 6%;
+      background: var(--navy-2);
+    }
+    .cta-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      background: linear-gradient(135deg, rgba(29,78,216,0.2), rgba(6,182,212,0.1));
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: var(--radius-lg);
+      padding: 64px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at center, rgba(29,78,216,0.1), transparent 60%);
+      pointer-events: none;
+    }
+    .cta-inner h2 {
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+    .cta-inner p {
+      font-size: 1rem;
+      color: var(--slate);
+      margin-bottom: 36px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      border-top: 1px solid var(--border);
+      padding: 40px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .footer-logo .logo-icon {
+      width: 30px; height: 30px;
+      background: var(--grad-main);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem;
+      color: #fff;
+    }
+    .footer-logo span {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--slate-light);
+    }
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--slate);
+    }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a {
+      font-size: 0.8rem;
+      color: var(--slate);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .footer-links a:hover { color: var(--blue-light); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .how-inner { grid-template-columns: 1fr; gap: 48px; }
+      .how-visual { display: none; }
+    }
+    @media (max-width: 640px) {
+      nav { padding: 0 4%; }
+      .nav-links a:not(.btn-nav):not(:last-child) { display: none; }
+      .hero { padding: 100px 4% 60px; }
+      .hero-stats { gap: 24px; }
+      .stat-divider { display: none; }
+      .features-section, .how-section, .testimonials-section,
+      .lang-section, .cta-section { padding: 70px 4%; }
+      .cta-inner { padding: 40px 24px; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+
+  <!-- ── NAVBAR ── -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="logo-icon"><i class="fas fa-brain"></i></div>
+      <span>SEPT <em>AI</em></span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it Works</a>
+      <a href="#testimonials">Reviews</a>
+      <a href="/login">Login</a>
+      <a href="/register" class="btn-nav">Get Started</a>
+    </div>
+  </nav>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="hero-content">
+      <div class="hero-badge">
+        <i class="fas fa-star"></i>
+        AI-Powered Adaptive Learning Platform
+      </div>
+
+      <h1>
+        Learn to Code<br>
+        <span class="grad-text">Smarter, Not Harder</span>
+      </h1>
+
+      <p>
+        SEPT AI personalizes your programming journey using AI — identifying weak areas,
+        unlocking challenges progressively, and keeping you in the flow with gamified learning.
+      </p>
+
+      <div class="hero-cta">
+        <a href="/register" class="btn-primary">
+          <i class="fas fa-rocket"></i> Start Learning Free
+        </a>
+        <a href="/login" class="btn-outline">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">100+</div>
+          <div class="stat-label">Practicals</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">4</div>
+          <div class="stat-label">Languages</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">AI</div>
+          <div class="stat-label">Powered</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">Live</div>
+          <div class="stat-label">Code Runner</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURES ── -->
+  <section class="features-section" id="features">
+    <div class="features-header">
+      <div class="section-label">Platform Features</div>
+      <h2 class="section-title">Everything you need to <span>master programming</span></h2>
+      <p class="section-sub">From AI-generated quizzes to live code execution — SEPT AI has every tool to accelerate your learning.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon icon-blue"><i class="fas fa-route"></i></div>
+        <h3>Adaptive Learning Paths</h3>
+        <p>AI analyzes your quiz performance and automatically unlocks the right challenges — no more guessing what to study next.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-cyan"><i class="fas fa-terminal"></i></div>
+        <h3>Live Code Execution</h3>
+        <p>Write and run Python and C code directly in the browser. Instant output, real compiler feedback, zero setup required.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-purple"><i class="fas fa-brain"></i></div>
+        <h3>AI Quiz Generator</h3>
+        <p>Generate custom quizzes on any topic using GPT-4o. Timed, scored, and tied directly to your progress tracking.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-green"><i class="fas fa-chart-line"></i></div>
+        <h3>Progress Analytics</h3>
+        <p>Track scores, streaks, and weak areas across all subjects. Visual dashboards for both students and teachers.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-gold"><i class="fas fa-trophy"></i></div>
+        <h3>Gamification & Leaderboard</h3>
+        <p>Earn points, level up from Beginner to Master, maintain daily streaks, and compete on the class leaderboard.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon icon-pink"><i class="fas fa-chalkboard-teacher"></i></div>
+        <h3>Teacher Dashboard</h3>
+        <p>Mark practicals, track attendance, send feedback, generate PDF reports, and monitor every student's progress.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ── -->
+  <section class="how-section" id="how">
+    <div class="how-inner">
+      <div>
+        <div class="section-label">How It Works</div>
+        <h2 class="section-title">Your path from <span>zero to hero</span></h2>
+        <p class="section-sub" style="margin-bottom: 40px;">A structured, AI-guided journey that adapts to your pace and performance.</p>
+
+        <div class="how-steps">
+          <div class="step">
+            <div class="step-num">01</div>
+            <div class="step-body">
+              <h4>Register & Pick Your Language</h4>
+              <p>Create your account, choose Python, C, C++, or Java, and let SEPT AI set up your personalized curriculum.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">02</div>
+            <div class="step-body">
+              <h4>Take Quizzes & Unlock Topics</h4>
+              <p>Score above 60% to unlock the next topic. The AI identifies weak areas and suggests targeted study materials.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">03</div>
+            <div class="step-body">
+              <h4>Solve Coding Challenges</h4>
+              <p>Progress from Easy to Medium to Hard challenges. Submit code, get instant feedback, and earn points.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">04</div>
+            <div class="step-body">
+              <h4>Track Progress & Level Up</h4>
+              <p>Watch your level rise, maintain streaks, climb the leaderboard, and get teacher feedback on practicals.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="how-visual">
+        <div class="visual-card">
+          <div class="vc-icon icon-blue"><i class="fas fa-user-graduate"></i></div>
+          <div class="vc-text">
+            <h5>Student Progress</h5>
+            <p>Python — Intermediate Level</p>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:72%"></div></div>
+          </div>
+        </div>
+        <div class="visual-card">
+          <div class="vc-icon icon-green"><i class="fas fa-check-circle"></i></div>
+          <div class="vc-text">
+            <h5>Quiz Score</h5>
+            <p>Functions & Loops — 85%</p>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:85%; background: linear-gradient(90deg,#10b981,#34d399)"></div></div>
+          </div>
+        </div>
+        <div class="visual-card">
+          <div class="vc-icon icon-gold"><i class="fas fa-fire"></i></div>
+          <div class="vc-text">
+            <h5>Daily Streak</h5>
+            <p>7 days active — Keep it up!</p>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:58%; background: linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div>
+          </div>
+        </div>
+        <div class="visual-card">
+          <div class="vc-icon icon-purple"><i class="fas fa-star"></i></div>
+          <div class="vc-text">
+            <h5>Total Points</h5>
+            <p>340 pts — Advanced Level</p>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:68%; background: linear-gradient(90deg,#8b5cf6,#a78bfa)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── LANGUAGES ── -->
+  <section class="lang-section">
+    <div class="section-label" style="justify-content:center;">Supported Languages</div>
+    <h2 class="section-title">Code in your <span>language of choice</span></h2>
+    <div class="lang-grid">
+      <div class="lang-pill"><i class="fab fa-python" style="color:#3b82f6;"></i> Python</div>
+      <div class="lang-pill"><i class="fas fa-copyright" style="color:#06b6d4;"></i> C Language</div>
+      <div class="lang-pill"><i class="fas fa-plus" style="color:#8b5cf6;"></i> C++</div>
+      <div class="lang-pill"><i class="fab fa-java" style="color:#f59e0b;"></i> Java</div>
+    </div>
+  </section>
+
+  <!-- ── TESTIMONIALS ── -->
+  <section class="testimonials-section" id="testimonials">
+    <div class="testimonials-header">
+      <div class="section-label">Student Reviews</div>
+      <h2 class="section-title">Loved by <span>learners</span></h2>
+      <p class="section-sub">Real feedback from students who leveled up their programming skills with SEPT AI.</p>
+    </div>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+        <p>"The adaptive quiz system is a game changer. It knew exactly where I was struggling and pushed me to improve. My Python score went from 40% to 88% in two weeks."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar av-blue">A</div>
+          <div class="author-info">
+            <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+            <h5>Aryan S.</h5>
+            <span>Computer Science Student</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+        <p>"I love the gamification. Earning points and maintaining streaks keeps me coming back every day. The leaderboard makes it competitive in the best way possible."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar av-cyan">B</div>
+          <div class="author-info">
+            <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+            <h5>Bhavna R.</h5>
+            <span>IT Engineering Student</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+        <p>"As a teacher, the dashboard gives me everything I need — attendance, practical submissions, weak area reports. It saves hours of manual work every week."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar av-purple">C</div>
+          <div class="author-info">
+            <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+            <h5>Prof. Chetan M.</h5>
+            <span>Faculty, CS Department</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section  class="cta-section">
+    <div class="cta-inner">
+      <h2>Ready to start your coding journey?</h2>
+      <p>Join SEPT AI today and experience a smarter way to learn programming — personalized, gamified, and AI-powered.</p>
+      <div class="cta-buttons">
+        <a href="/register" class="btn-primary">
+          <i class="fas fa-rocket"></i> Create Free Account
+        </a>
+        <a href="/login" class="btn-outline">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <a href="#" class="footer-logo">
+      <div class="logo-icon"><i class="fas fa-brain"></i></div>
+      <span>SEPT AI</span>
+    </a>
+    <div class="footer-copy">© 2025 Smart Education Progress Tracker — Built for #PS²-Spark</div>
+    <div class="footer-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it Works</a>
+      <a href="/login">Login</a>
+      <a href="/register">Register</a>
+    </div>
+  </footer>
+
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

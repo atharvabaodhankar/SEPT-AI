@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Quiz CSV</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+  }
+
+  .container {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px 50px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    animation: fadeIn 0.7s ease-in-out;
+  }
+
+  h2 {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 30px;
+  }
+
+  input[type="file"] {
+    display: block;
+    margin: 20px auto;
+    padding: 12px 18px;
+    border-radius: 12px;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 80%;
+  }
+
+  input[type="file"]:hover {
+    border-color: #667eea;
+  }
+
+  button {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    margin-top: 20px;
+  }
+
+  button:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(118,75,162,0.4);
+  }
+
+  a.back {
+    display: inline-block;
+    margin-top: 25px;
+    color: #667eea;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  a.back:hover {
+    color: #764ba2;
+    text-decoration: underline;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h2>📄 Upload Quizzes via CSV</h2>
+    <form action="{{ url_for('upload_quiz_csv') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="csv_file" accept=".csv" required>
+        <button type="submit">Upload</button>
+    </form>
+    <a class="back" href="{{ url_for('teacher_dashboard') }}">← Back to Dashboard</a>
+  </div>
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

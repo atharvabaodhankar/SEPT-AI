@@ -1,0 +1,504 @@
+/* =========================================================
+   SEPT — Global Brown AI Theme (Dark default / Light toggle)
+   This file OVERRIDES each page's own hardcoded colors so the
+   whole site looks consistent, without rewriting every page.
+   ========================================================= */
+
+:root {
+  /* Dark mode = plain black, as requested */
+  --bg-1: #000000;
+  --bg-2: #0a0a0a;
+  --bg-3: #000000;
+  --card: #111111;
+  --card-2: #1a1a1a;
+  --border: #333333;
+  --border-soft: rgba(255, 255, 255, 0.12);
+  --text: #f3e6d3;
+  --muted: #a8a8a8;
+  --accent: #c2762a;
+  --accent-2: #e0973a;
+  --logo-color: #e0973a;
+  --accent-glow: rgba(194, 118, 42, 0.35);
+  --shadow: rgba(0, 0, 0, 0.7);
+  --input-bg: #141414;
+  --success: #7fbf6c;
+  --danger: #d9685f;
+  --warning: #e0a23a;
+}
+
+html[data-theme="light"] {
+  /* Light mode uses the requested hex #160904 as the text/accent-dark tone,
+     with a light background so the text stays readable */
+  --bg-1: #fbf6ee;
+  --bg-2: #f3e9d8;
+  --bg-3: #ffffff;
+  --card: #ffffff;
+  --card-2: #fdf6ea;
+  --border: #160904;
+  --border-soft: rgba(22, 9, 4, 0.35);
+  --text: #160904;
+  --muted: #5a4033;
+  --accent: #160904;
+  --accent-2: #c2762a;
+  --accent-glow: rgba(22, 9, 4, 0.15);
+  --shadow: rgba(22, 9, 4, 0.15);
+  --input-bg: #ffffff;
+  --success: #2f7a3f;
+  --danger: #b4392f;
+  --warning: #a6711e;
+}
+
+/* ---------- Base page ---------- */
+html,
+body {
+  background: radial-gradient(circle at top left, var(--bg-2), var(--bg-1) 60%, var(--bg-3) 100%) !important;
+  color: var(--text) !important;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+* {
+  scrollbar-color: var(--accent) var(--bg-1);
+}
+
+/* ---------- Generic containers / cards / panels ---------- */
+.container,
+.card,
+header,
+.navbar,
+.top-bar,
+table,
+thead,
+tbody,
+.editor-container,
+#output-container,
+#editor,
+details,
+pre,
+.empty-state,
+.chat-box,
+.sidebar,
+.panel,
+.modal,
+.modal-content,
+.dashboard-card,
+.stat-card,
+.quiz-box,
+.question-box,
+.prejoin,
+.video-panel,
+.video-header,
+.info-card,
+.right-panel,
+.class-grid {
+  background: var(--card) !important;
+  border: 1px solid var(--border-soft) !important;
+  color: var(--text) !important;
+  box-shadow: 0 8px 24px var(--shadow) !important;
+}
+
+tr {
+  border-bottom: 1px solid var(--border-soft) !important;
+}
+
+tr:hover {
+  background: var(--card-2) !important;
+}
+
+th {
+  color: var(--accent-2) !important;
+}
+
+td {
+  color: var(--text) !important;
+}
+
+/* ---------- Text ---------- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text) !important;
+}
+
+p,
+span,
+label,
+li,
+small {
+  color: var(--text) !important;
+}
+
+.muted,
+.text-muted,
+small.muted {
+  color: var(--muted) !important;
+}
+
+/* ---------- Links ---------- */
+a,
+a.back,
+a.back-link,
+a.logout-link,
+.nav-link {
+  color: var(--accent-2) !important;
+}
+
+a:hover {
+  color: var(--accent) !important;
+}
+
+/* btn-start, btn-join etc are <a>/<button> styled as CTAs with a colored
+   gradient background — the generic link-color rule above was painting
+   their text the same orange as the background, making it invisible.
+   Force these back to a light, readable label color. */
+a.btn-start,
+a.btn-join,
+.btn-start,
+.btn-join,
+.btn-nav {
+  color: #fff8ef !important;
+}
+
+/* ---------- Buttons ---------- */
+button:not(.theme-toggle-btn),
+input[type="submit"],
+.btn-modern,
+.btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important;
+  color: #fff8ef !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 4px 14px var(--accent-glow) !important;
+}
+
+button:not(.theme-toggle-btn):hover,
+.btn-modern:hover,
+.btn:hover {
+  filter: brightness(1.1);
+  opacity: 1 !important;
+}
+
+button.secondary {
+  background: var(--card-2) !important;
+  color: var(--text) !important;
+}
+
+/* ---------- Inputs ---------- */
+input,
+select,
+textarea {
+  background: var(--input-bg) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border-soft) !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted) !important;
+}
+
+/* ---------- Status badges (keep meaning, just retint) ---------- */
+.checked,
+.status-Checked,
+.status-checked {
+  color: var(--success) !important;
+}
+
+.pending,
+.status-Submitted {
+  color: var(--warning) !important;
+}
+
+.status-badge.status-Checked,
+.status-badge.status-checked {
+  background: rgba(127, 191, 108, 0.15) !important;
+}
+
+.status-badge.status-Submitted {
+  background: rgba(224, 162, 58, 0.15) !important;
+}
+
+/* ---------- Misc accents ---------- */
+.subject-tag {
+  background: var(--accent-glow) !important;
+  color: var(--accent-2) !important;
+}
+
+#toast {
+  background: var(--accent) !important;
+  color: #fff8ef !important;
+}
+
+.errorLine {
+  background-color: rgba(217, 104, 95, 0.3) !important;
+}
+
+
+html:not([data-theme="light"]) 
+.nav-logo .logo-icon span {
+  color: var(--logo-color) !important;
+}
+
+html:not([data-theme="light"]) nav {
+  background: linear-gradient(135deg,
+      rgba(21, 12, 8, 0.6),
+      rgba(230, 220, 215, 0.6)) !important;
+}
+
+/* DARK MODE BUTTON */
+html:not([data-theme="light"]) nav .nav-links a.btn-nav {
+  display: inline-block;
+  position: relative;
+  background: linear-gradient(135deg, #270f03) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 15px rgba(255, 77, 77, 0.4) !important;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+/* HOVER */
+html:not([data-theme="light"]) nav .nav-links a.btn-nav:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(255, 77, 77, 0.6);
+}
+
+/* UNDERLINE */
+html:not([data-theme="light"]) nav .nav-links a.btn-nav::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  width: 0%;
+  height: 2px;
+  background: #ffffff;
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+/* HOVER UNDERLINE */
+html:not([data-theme="light"]) nav .nav-links a.btn-nav:hover::after {
+  width: 70%;
+}
+
+/* ---------- Landing page (index.html) & Login page (login.html) ----------
+   These two pages define their OWN blue color system (--navy, --blue,
+   --cyan, --grad-main, etc.) instead of using --bg-1/--text/--accent like
+   the rest of the site. Redefining those exact variable names here makes
+   them follow the same black (dark) / #160904 (light) scheme. */
+:root {
+  --navy: #000000;
+  --navy-2: #0a0a0a;
+  --navy-3: #111111;
+  --navy-4: #1a1a1a;
+  --blue: #c2762a;
+  --blue-light: #e0973a;
+  --cyan: #c2762a;
+  --cyan-light: #e0973a;
+  --slate: #a8a8a8;
+  --slate-light: #d8d8d8;
+  --white: #f3e6d3;
+  --gold: #e0a23a;
+  --logo-color: #000000;
+  --purple: #c2762a;
+  --grad-main: linear-gradient(135deg, #c2762a 0%, #e0973a 100%);
+  --grad-card: linear-gradient(145deg, #111111, #0a0a0a);
+  --border: rgba(255, 255, 255, 0.15);
+  --glow-blue: 0 0 40px rgba(194, 118, 42, 0.25);
+  --glow-cyan: 0 0 40px rgba(194, 118, 42, 0.2);
+}
+
+html[data-theme="light"] {
+  --navy: #fbf6ee;
+  --navy-2: #f3e9d8;
+  --navy-3: #ffffff;
+  --navy-4: #fdf6ea;
+  --blue: #160904;
+  --blue-light: #3a2418;
+  --cyan: #160904;
+  --cyan-light: #3a2418;
+  --slate: #5a4033;
+  --slate-light: #2c1c0c;
+  --white: #160904;
+  --gold: #a6711e;
+  --purple: #160904;
+  --grad-main: linear-gradient(135deg, #160904 0%, #3a2418 100%);
+  --grad-card: linear-gradient(145deg, #ffffff, #fdf6ea);
+  --border: rgba(22, 9, 4, 0.25);
+  --glow-blue: 0 0 40px rgba(22, 9, 4, 0.15);
+  --glow-cyan: 0 0 40px rgba(22, 9, 4, 0.1);
+}
+
+/* ---------- Theme toggle button ---------- */
+.theme-toggle-btn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 99999;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--accent-2);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px var(--shadow);
+}
+/* ---------- Hamburger menu button (mobile sidebar toggle) ---------- */
+.sept-hamburger-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  cursor: pointer;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+.sept-hamburger-btn span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: #cbd5e1;
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.sept-hamburger-btn.sept-active span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.sept-hamburger-btn.sept-active span:nth-child(2) { opacity: 0; }
+.sept-hamburger-btn.sept-active span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.sept-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 99;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.sept-sidebar-overlay.sept-visible {
+  display: block;
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  .sept-hamburger-btn { display: flex; }
+  .sidebar {
+    transition: transform 0.25s ease;
+  }
+  .sidebar.sept-open {
+    transform: translateX(0) !important;
+  }
+}
+
+/* ---------- Notification bell + dropdown ---------- */
+.sept-notif-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.sept-notif-btn {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.05);
+  color: #cbd5e1;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+.sept-notif-btn:hover {
+  background: rgba(59,130,246,0.15);
+  color: #f1f5f9;
+}
+.sept-notif-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  border: 2px solid var(--navy-2, #0d1526);
+}
+.sept-notif-dropdown {
+  display: none;
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: 320px;
+  max-width: 88vw;
+  background: #111d35;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  overflow: hidden;
+  z-index: 200;
+}
+.sept-notif-dropdown.sept-visible { display: block; }
+.sept-notif-header {
+  padding: 12px 16px;
+  font-weight: 700;
+  font-size: 13px;
+  color: #f1f5f9;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sept-notif-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+.sept-notif-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.sept-notif-item:last-child { border-bottom: none; }
+.sept-notif-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 3px;
+}
+.sept-notif-body {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+.sept-notif-empty {
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 12.5px;
+  color: #64748b;
+}
+.sept-notif-viewall {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #38bdf8;
+  text-decoration: none;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.02);
+}
+.sept-notif-viewall:hover { background: rgba(56,189,248,0.1); }

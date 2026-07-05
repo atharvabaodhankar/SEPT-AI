@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practicals</title>
+<style>
+body{max-width:800px;margin:0 auto;padding:16px;box-sizing:border-box}
+.card{border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:14px;margin-bottom:12px}
+</style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+<h2>C Language Practicals</h2>
+
+{% if practicals %}
+    {% for p in practicals %}
+        <div class="card">
+            <h3>Practical {{ p.practical_no }}: {{ p.title }}</h3>
+            <p>{{ p.description }}</p>
+            <p><b>Difficulty:</b> {{ p.difficulty }}</p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No practicals found.</p>
+{% endif %}
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

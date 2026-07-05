@@ -1,0 +1,49 @@
+[
+  {
+    "id": 1,
+    "language": "Python",
+    "question": "What is the output of print(2 ** 3)?",
+    "options": ["5", "6", "8", "9"],
+    "correct_answer": "8",
+    "materials": [
+      {
+        "type": "PDF",
+        "title": "Python Basics Notes",
+        "link": "https://example.com/python_basics.pdf"
+      },
+      {
+        "type": "Video",
+        "title": "Python Fundamentals Video",
+        "link": "https://example.com/python_fundamentals.mp4"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "language": "Python",
+    "question": "Which keyword is used to define a function in Python?",
+    "options": ["func", "define", "def", "function"],
+    "correct_answer": "def",
+    "materials": [
+      {
+        "type": "PDF",
+        "title": "Python Functions Guide",
+        "link": "https://example.com/python_functions.pdf"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "language": "Java",
+    "question": "Which data type is used to store whole numbers in Java?",
+    "options": ["int", "float", "double", "long"],
+    "correct_answer": "int",
+    "materials": [
+      {
+        "type": "PDF",
+        "title": "Java Data Types Notes",
+        "link": "https://example.com/java_datatypes.pdf"
+      }
+    ]
+  }
+]
