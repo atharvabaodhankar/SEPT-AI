@@ -1,0 +1,31 @@
+body 
+{ font-family: Arial, sans-serif; 
+    text-align:center; 
+    background:#f4f4f4; padding:30px; }
+h1,h2 
+{ color:#333; 
+
+}
+input 
+{  padding:8px; 
+    margin:5px; 
+    width:200px; 
+}
+button 
+{ padding:8px 12px; 
+}
+ul 
+{ list-style:none; 
+    padding:0; 
+}
+.success 
+{ color: green; 
+}
+.error 
+{ color: red; 
+}
+.info 
+{ color: blue;
+     
+}
+

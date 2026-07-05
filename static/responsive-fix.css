@@ -1,0 +1,107 @@
+/* ============================================================
+   SEPT — GLOBAL RESPONSIVE SAFETY NET
+   Loaded on every page, after all other stylesheets, so it can
+   patch up mobile/tablet issues without touching each page's
+   own design system.
+   ============================================================ */
+
+html { -webkit-text-size-adjust: 100%; }
+
+/* Never allow horizontal scroll of the whole page */
+html, body { max-width: 100%; overflow-x: hidden; }
+
+/* Media never overflows its container */
+img, svg, video, iframe, canvas { max-width: 100%; height: auto; }
+
+/* Long words/links never blow out a container on narrow screens */
+h1, h2, h3, h4, h5, h6, p, span, a, li, td, th, label, small, blockquote {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Code blocks wrap instead of forcing width */
+pre, code { white-space: pre-wrap; word-break: break-word; }
+
+/* Every plain table gets a horizontal-scroll fallback so columns
+   never get crushed or force page-wide overflow */
+table { max-width: 100%; }
+
+@media (max-width: 768px) {
+  table:not(.no-scroll-fix) {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+  table:not(.no-scroll-fix) thead,
+  table:not(.no-scroll-fix) tbody,
+  table:not(.no-scroll-fix) tr { display: revert; }
+}
+
+/* Plain (non-dashboard) utility pages: body { padding:20px } etc.
+   tighten up on small screens so content doesn't feel cramped */
+@media (max-width: 600px) {
+  body { padding-left: 12px !important; padding-right: 12px !important; }
+}
+@media (max-width: 420px) {
+  body { padding-left: 8px !important; padding-right: 8px !important; }
+}
+
+/* Forms: inputs/selects/textareas/buttons should never overflow
+   their parent on small screens */
+input, select, textarea, button {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Generic full-bleed buttons stack nicely instead of overlapping text */
+@media (max-width: 480px) {
+  .btn, .btn-primary, .btn-danger, button[type="submit"] {
+    white-space: normal;
+    word-break: break-word;
+    text-align: center;
+  }
+}
+
+/* Headings that used large fixed rem sizes shrink gracefully instead
+   of clipping/overlapping on small phones (only applies where the
+   page hasn't already set its own responsive size, thanks to the
+   cascade order — page-specific @media rules loaded earlier still win
+   if they target the same breakpoint more specifically). */
+@media (max-width: 420px) {
+  h1 { font-size: clamp(1.3rem, 6vw, 2rem); }
+  h2 { font-size: clamp(1.15rem, 5vw, 1.6rem); }
+  h3 { font-size: clamp(1rem, 4.5vw, 1.3rem); }
+}
+
+/* Flex/grid rows that don't declare their own wrap behavior still
+   wrap instead of squeezing children unreadably thin */
+.row, .flex-row, .button-row, .actions, .btn-group {
+  flex-wrap: wrap;
+}
+
+/* ── Classic flex/grid overflow bug ──
+   Flex/grid children default to min-width:auto, so one wide child
+   (a table, a code block, a button row) can force the WHOLE column
+   wider than the screen instead of scrolling internally. This
+   safety net lets any such container actually shrink to the
+   viewport; an inner overflow-x:auto (table-wrap, pre, etc.) then
+   does the scrolling as intended, instead of the layout being
+   pushed off-screen. */
+@media (max-width: 1024px) {
+  [class*="grid"], [class*="grid"] > *,
+  [class*="row"] > *,
+  [class*="col"] > *,
+  [class*="panel"] > *,
+  [class*="wrap"] > *,
+  [class*="dashboard"] > *,
+  [class*="layout"] > *,
+  .main, .content {
+    min-width: 0;
+  }
+}
+
+/* Navbars: avoid brand text colliding with toggler on very small screens */
+@media (max-width: 380px) {
+  .navbar-brand { font-size: 1.1rem !important; }
+}

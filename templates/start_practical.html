@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practical {{ practical.practical_no }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--aqua:#06b6d4;}
+body.dark{--bg:#020617;--card:#0f172a;--text:#e5e7eb;--muted:#94a3b8;}
+body.light{--bg:#f8fafc;--card:#ffffff;--text:#020617;--muted:#475569;}
+body{margin:0;font-family:Poppins,sans-serif;background:var(--bg);color:var(--text);}
+.container{max-width:1200px;margin:25px auto;padding:25px;border-radius:16px;background:var(--card);box-shadow:0 8px 20px rgba(0,0,0,0.2);}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.back{color:var(--aqua);text-decoration:none;font-weight:600;}
+button,select{padding:10px 16px;border-radius:10px;border:none;font-weight:600;}
+button{background:var(--aqua);cursor:pointer;transition:0.3s;}
+button:hover:not(:disabled){opacity:0.85;}
+button.secondary{background:#1e293b;color:#e5e7eb;}
+button:disabled{opacity:.4;cursor:not-allowed;}
+h2,h4{margin:0 0 10px 0;}
+.editor-output-wrapper{display:flex;gap:20px;flex-wrap:wrap;}
+.editor-container,#output-container{flex:1;min-width:300px;}
+#editor{height:420px;border-radius:14px;overflow:hidden;border:1px solid #1e293b;}
+#stdin{width:100%;height:90px;background:#020617;color:#e5e7eb;border:1px solid #1e293b;border-radius:12px;padding:12px;font-family:monospace;margin-top:10px;}
+#output-container{border-radius:14px;border:1px solid #1e293b;background:#020617;padding:15px;max-height:420px;overflow:auto;font-family:monospace;color:var(--aqua);}
+.errorLine{background-color: rgba(255,0,0,0.3);}
+#lastRun{font-size:0.9em;color:var(--muted);margin-top:5px;text-align:right;}
+.button-group{margin-top:15px;display:flex;gap:10px;flex-wrap:wrap;}
+#toast{position:fixed;bottom:30px;right:30px;background:#14b8a6;color:#fff;padding:15px 25px;border-radius:12px;font-weight:600;box-shadow:0 5px 15px rgba(0,0,0,0.3);display:none;z-index:9999;}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+<script>
+require.config({paths:{'vs':'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs'}});
+</script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body class="dark">
+<div class="container">
+    <div class="top-bar">
+        <a class="back" href="{{ url_for('student_dashboard') }}">⬅ Back</a>
+        <button class="secondary" onclick="toggleTheme()">🌙 / ☀</button>
+    </div>
+
+    <h2>Practical {{ practical.practical_no }}: {{ practical.title }}</h2>
+    <p style="color:var(--muted);">{{ practical.task }}</p>
+
+    <div class="button-group">
+        <select id="language">
+            <option value="python">Python</option>
+            <option value="c">C</option>
+            <option value="cpp">C++</option>
+            <option value="java">Java</option>
+        </select>
+        <button onclick="runCode()">▶ Run</button>
+        <button onclick="downloadCode()">⬇ Download</button>
+        <button id="submitBtn" onclick="submitPractical()" disabled>🔒 Submit (Run Required)</button>
+    </div>
+
+    <div class="editor-output-wrapper">
+        <div class="editor-container">
+            <div id="editor"></div>
+            <h4>Program Input</h4>
+            <textarea id="stdin" placeholder="Enter input here"></textarea>
+        </div>
+        <div id="output-container">
+            <h4>Output</h4>
+            <div id="output">Console output...</div>
+            <div id="lastRun">Last run: Never</div>
+        </div>
+    </div>
+
+    <form id="submitForm" method="POST" action="{{ url_for('submit_practical', practical_id=practical.id) }}">
+        <input type="hidden" name="language" id="hiddenLang">
+        <input type="hidden" name="code" id="hiddenCode">
+        <input type="hidden" name="output" id="hiddenOutput">
+    </form>
+</div>
+
+<div id="toast">✅ Practical submitted successfully!</div>
+
+<script>
+let editor; let hasRun=false;
+if(localStorage.getItem('theme')){document.body.className = localStorage.getItem('theme');}
+let savedCode = localStorage.getItem("practical-{{ practical.practical_no }}") || '# Write your code here\n';
+require(['vs/editor/editor.main'],function(){
+    monaco.editor.defineTheme('aquaDark',{base:'vs-dark',inherit:true,rules:[{token:'keyword',foreground:'22d3ee'},{token:'string',foreground:'34d399'}],colors:{'editor.background':'#0f172a'}});
+    editor = monaco.editor.create(document.getElementById('editor'),{value:savedCode,language:'python',theme:'aquaDark',fontSize:14,minimap:{enabled:false}});
+});
+language.addEventListener('change',()=>{monaco.editor.setModelLanguage(editor.getModel(), language.value==='cpp'?'cpp':language.value);});
+function toggleTheme(){if(document.body.classList.contains('dark')){document.body.classList.replace('dark','light');localStorage.setItem('theme','light');}else{document.body.classList.replace('light','dark');localStorage.setItem('theme','dark');}}
+setInterval(()=>{localStorage.setItem("practical-{{ practical.practical_no }}", editor.getValue());},5000);
+let errorDecorations=[];
+async function runCode(){
+    const outputDiv = document.getElementById('output');
+    outputDiv.textContent='Running...'; hasRun=false; document.getElementById("submitBtn").disabled=true; clearErrorDecorations();
+    try{
+        const res = await fetch("https://emkc.org/api/v2/piston/execute",{method:"POST",headers:{'Content-Type':'application/json'},body:JSON.stringify({language: language.value,version:"*",files:[{content:editor.getValue()}],stdin: document.getElementById("stdin").value})});
+        const data = await res.json();
+        outputDiv.textContent = data.run?.stdout || data.run?.stderr || "✅ Executed";
+        hasRun=true; document.getElementById("submitBtn").disabled=false; document.getElementById("submitBtn").innerText="✅ Submit";
+        document.getElementById("lastRun").textContent=`Last run: ${new Date().toLocaleTimeString()}`;
+        if(data.run?.stderr){markErrorLine(data.run.stderr);}
+        outputDiv.scrollTop = 0;
+    }catch(e){outputDiv.textContent='❌ Error: '+e;}
+}
+function markErrorLine(stderr){const match = stderr.match(/:(\d+):\d+/); if(match){const line=parseInt(match[1]); errorDecorations = editor.deltaDecorations(errorDecorations,[{range:new monaco.Range(line,line,1,1),options:{inlineClassName:'errorLine'}}]);}}
+function clearErrorDecorations(){errorDecorations = editor.deltaDecorations(errorDecorations, []);}
+function showToast(message){const toast = document.getElementById('toast'); toast.textContent = message; toast.style.display='block'; toast.style.opacity='1'; setTimeout(()=>{toast.style.transition='opacity 0.5s'; toast.style.opacity='0'; setTimeout(()=>{toast.style.display='none'; toast.style.transition='';},500);},2500);}
+function submitPractical(){if(!hasRun){alert("⚠️ Please RUN the code before submitting!"); return;} hiddenLang.value = language.value; hiddenCode.value = editor.getValue(); hiddenOutput.value = document.getElementById('output').textContent; fetch("{{ url_for('submit_practical', practical_id=practical.id) }}",{method:'POST',body:new FormData(document.getElementById('submitForm'))}).then(res=>{if(res.ok){showToast("✅ Practical submitted successfully!");} else{showToast("❌ Submission failed!");}});}
+function downloadCode(){const ext={python:'py',c:'c',cpp:'cpp',java:'java'}[language.value];const blob=new Blob([editor.getValue()],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`practical.${ext}`;a.click();}
+</script>
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

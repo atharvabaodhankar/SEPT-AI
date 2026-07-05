@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Notifications</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+    * { box-sizing: border-box; }
+    body {
+        background: linear-gradient(135deg, #0a0f1e, #111d35, #0a0f1e);
+        color: #f1f5f9;
+        font-family: 'Inter', sans-serif;
+        padding: 32px 20px;
+        min-height: 100vh;
+        margin: 0;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    .btn {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: #cbd5e1;
+        padding: 8px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: 0.2s;
+    }
+    .btn:hover { background: rgba(59,130,246,0.15); color: #f1f5f9; }
+    h2 {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 22px 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .sub { color: #94a3b8; font-size: 13px; margin-bottom: 20px; }
+    hr { border-color: rgba(255,255,255,0.08); margin-bottom: 20px; }
+
+    .card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-left: 3px solid rgba(255,255,255,0.08);
+        padding: 16px 18px;
+        border-radius: 12px;
+        margin-bottom: 14px;
+        transition: 0.2s;
+    }
+    .card.unread {
+        border-left: 3px solid #38bdf8;
+        background: rgba(56,189,248,0.06);
+    }
+    .card h5 {
+        margin: 0 0 6px;
+        font-size: 15px;
+        font-weight: 700;
+        color: #f8fafc;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .card .unread-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: #38bdf8; flex-shrink: 0;
+    }
+    .card p { margin: 0 0 8px; font-size: 14px; color: #cbd5e1; line-height: 1.5; }
+    .card small { color: #64748b; font-size: 12px; }
+
+    .empty {
+        text-align: center;
+        color: #64748b;
+        padding: 40px 0;
+        font-size: 14px;
+    }
+</style>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+<div class="wrap">
+  <a href="{{ url_for(back_endpoint) if back_endpoint else '/' }}" class="btn"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  <h2><i class="fa-solid fa-bell"></i> Notifications</h2>
+  <p class="sub">Stay up to date with your latest quizzes, challenges and announcements.</p>
+  <hr>
+
+  {% for n in notes %}
+  <div class="card {{ 'unread' if not n.seen else '' }}">
+      <h5>{% if not n.seen %}<span class="unread-dot"></span>{% endif %} {{ n.title }}</h5>
+      {% if n.body %}<p>{{ n.body }}</p>{% endif %}
+      <small>{{ n.created_at }}</small>
+  </div>
+  {% else %}
+  <div class="empty">
+    <i class="fa-regular fa-bell-slash" style="font-size:28px; display:block; margin-bottom:10px;"></i>
+    No notifications yet.
+  </div>
+  {% endfor %}
+</div>
+
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

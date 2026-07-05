@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Select Language</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+<h2 class="lang-title">🚀 Choose Your Programming Language</h2>
+
+<form method="POST" class="language-container">
+
+  <button class="lang-card c" name="language" value="C">
+    <span>💻</span>
+    <h3>C</h3>
+    <p>Foundation of Programming</p>
+  </button>
+
+  <button class="lang-card cpp" name="language" value="C++">
+    <span>⚙️</span>
+    <h3>C++</h3>
+    <p>Performance & OOP</p>
+  </button>
+
+  <button class="lang-card java" name="language" value="Java">
+    <span>☕</span>
+    <h3>Java</h3>
+    <p>Enterprise & Backend</p>
+  </button>
+
+  <button class="lang-card python" name="language" value="Python">
+    <span>🐍</span>
+    <h3>Python</h3>
+    <p>AI, ML & Automation</p>
+  </button>
+
+</form>
+
+<style>
+.lang-title {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 30px;
+    font-weight: 700;
+    color: #f9fafb;
+}
+
+.language-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
+    max-width: 900px;
+    margin: auto;
+}
+
+.lang-card {
+    border: none;
+    border-radius: 22px;
+    padding: 30px 20px;
+    cursor: pointer;
+    text-align: center;
+    color: #fff;
+    background: linear-gradient(135deg,#3b82f6,#06b6d4);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    transition: all 0.35s ease;
+}
+
+.lang-card span {
+    font-size: 42px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.lang-card h3 {
+    margin: 8px 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.lang-card p {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Hover effect */
+.lang-card:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+}
+
+/* Active click */
+.lang-card:active {
+    transform: scale(0.95);
+}
+
+/* Different gradients */
+.lang-card.c {
+    background: linear-gradient(135deg,#6366f1,#4338ca);
+}
+.lang-card.cpp {
+    background: linear-gradient(135deg,#14b8a6,#0f766e);
+}
+.lang-card.java {
+    background: linear-gradient(135deg,#f97316,#ea580c);
+}
+.lang-card.python {
+    background: linear-gradient(135deg,#22c55e,#15803d);
+}
+@media(max-width:480px){
+  .lang-title{font-size:24px}
+  .language-container{grid-template-columns:1fr;gap:16px;padding:0 12px}
+}
+</style>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

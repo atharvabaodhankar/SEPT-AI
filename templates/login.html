@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign In — SEPT AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --navy: #0a0f1e;
+      --navy-2: #0d1526;
+      --navy-3: #111d35;
+      --blue: #1d4ed8;
+      --blue-light: #3b82f6;
+      --cyan: #06b6d4;
+      --cyan-light: #22d3ee;
+      --slate: #94a3b8;
+      --slate-light: #cbd5e1;
+      --white: #f8fafc;
+      --danger: #f87171;
+      --success: #34d399;
+      --gold: #f59e0b;
+      --grad-main: linear-gradient(135deg, #1d4ed8 0%, #06b6d4 100%);
+      --border: rgba(59, 130, 246, 0.18);
+      --glow-blue: 0 0 40px rgba(29, 78, 216, 0.3);
+      --radius: 14px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: var(--navy);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(29, 78, 216, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(29, 78, 216, 0.06) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+
+    /* orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb-1 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(29, 78, 216, 0.25), transparent 70%);
+      top: -150px;
+      left: -150px;
+      animation: drift 10s ease-in-out infinite;
+    }
+
+    .orb-2 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.18), transparent 70%);
+      bottom: -120px;
+      right: -120px;
+      animation: drift 13s ease-in-out infinite reverse;
+    }
+
+    @keyframes drift {
+
+      0%,
+      100% {
+        transform: translate(0, 0);
+      }
+
+      50% {
+        transform: translate(30px, -30px);
+      }
+    }
+
+    /* ── LAYOUT ── */
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      max-width: 960px;
+      width: 100%;
+      min-height: 580px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), var(--glow-blue);
+      border: 1px solid var(--border);
+    }
+
+    /* ── LEFT PANEL ── */
+    .left-panel {
+      background: linear-gradient(145deg, #ff3b3b, #7a1c1c);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 56px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .left-panel::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, rgba(29, 78, 216, 0.2), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .left-panel::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: -40px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.15), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--grad-main);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(29, 78, 216, 0.4);
+    }
+
+    .brand-name {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-name em {
+      font-style: normal;
+      background: var(--grad-main);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .left-body {
+      position: relative;
+      z-index: 1;
+    }
+
+    .left-body h2 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      color: var(--white);
+    }
+
+    .left-body h2 span {
+      background: var(--grad-main);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .left-body p {
+      font-size: 0.875rem;
+      color: var(--slate);
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .feat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.825rem;
+      color: var(--slate-light);
+    }
+
+    .feat-item .feat-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .fd-blue {
+      background: rgba(29, 78, 216, 0.25);
+      color: var(--blue-light);
+    }
+
+    .fd-cyan {
+      background: rgba(6, 182, 212, 0.25);
+      color: var(--cyan-light);
+    }
+
+    .fd-gold {
+      background: rgba(245, 158, 11, 0.25);
+      color: var(--gold);
+    }
+
+    .left-footer {
+      font-size: 0.75rem;
+      color: var(--slate);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── RIGHT PANEL (FORM) ── */
+    .right-panel {
+      background: var(--navy-2);
+      padding: 56px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .form-header {
+      margin-bottom: 36px;
+    }
+
+    .form-header h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--white);
+      margin-bottom: 6px;
+    }
+
+    .form-header p {
+      font-size: 0.85rem;
+      color: var(--slate);
+    }
+
+    /* flash / error */
+    .alert {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.825rem;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+
+    .alert-error {
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      color: var(--danger);
+    }
+
+    .alert-success {
+      background: rgba(52, 211, 153, 0.1);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: var(--success);
+    }
+
+    /* form fields */
+    .field {
+      margin-bottom: 20px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--slate-light);
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap i.input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.875rem;
+      color: var(--slate);
+      pointer-events: none;
+      transition: var(--transition);
+    }
+
+    .input-wrap input {
+      width: 100%;
+      padding: 13px 44px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      color: var(--white);
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .input-wrap input::placeholder {
+      color: rgba(148, 163, 184, 0.5);
+    }
+
+    .input-wrap input:focus {
+      border-color: var(--blue-light);
+      background: rgba(59, 130, 246, 0.06);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .input-wrap input:focus~i.input-icon,
+    .input-wrap:focus-within i.input-icon {
+      color: var(--blue-light);
+    }
+
+    .toggle-pwd {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--slate);
+      cursor: pointer;
+      font-size: 0.875rem;
+      padding: 4px;
+      transition: var(--transition);
+      line-height: 1;
+    }
+
+    .toggle-pwd:hover {
+      color: var(--blue-light);
+    }
+
+    .field-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      font-size: 0.8rem;
+    }
+
+    .remember-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--slate-light);
+      cursor: pointer;
+    }
+
+    .remember-label input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      accent-color: var(--blue-light);
+      cursor: pointer;
+    }
+
+    .forgot-link {
+      color: var(--blue-light);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .forgot-link:hover {
+      color: var(--cyan-light);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--grad-main);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(29, 78, 216, 0.4);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      letter-spacing: 0.2px;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(29, 78, 216, 0.55);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.825rem;
+      color: var(--slate);
+    }
+
+    .form-footer a {
+      color: var(--blue-light);
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .form-footer a:hover {
+      color: var(--cyan-light);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .page-wrap {
+        grid-template-columns: 1fr;
+        min-height: auto;
+      }
+
+      .left-panel {
+        display: none;
+      }
+
+      .right-panel {
+        padding: 40px 28px;
+      }
+    }
+    @media (max-width: 420px) {
+      .right-panel { padding: 32px 18px; }
+    }
+  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="page-wrap">
+    <!-- LEFT -->
+    <div class="left-panel">
+      <a href="/" class="brand">
+        <div class="brand-icon"><i class="fas fa-brain"></i></div>
+        <span class="brand-name">SEPT <em>AI</em></span>
+      </a>
+
+      <div class="left-body">
+        <h2>Welcome<br>back to <span>SEPT AI</span></h2>
+        <p>Your adaptive programming learning platform. Pick up right where you left off.</p>
+        <div class="feature-list">
+          <div class="feat-item">
+            <div class="feat-dot fd-blue"><i class="fas fa-route"></i></div>
+            Personalized learning paths
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot fd-cyan"><i class="fas fa-terminal"></i></div>
+            Live code execution engine
+          </div>
+          <div class="feat-item">
+            <div class="feat-dot fd-gold"><i class="fas fa-trophy"></i></div>
+            Gamified progress & leaderboard
+          </div>
+        </div>
+      </div>
+
+      <div class="left-footer">© 2025 Smart Education Progress Tracker</div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-panel">
+      <div class="form-header">
+        <h1>Sign in</h1>
+        <p>Enter your credentials to access your dashboard</p>
+      </div>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+      <div class="alert {{ 'alert-error' if category == 'error' else 'alert-success' }}">
+        <i class="fas {{ 'fa-exclamation-circle' if category == 'error' else 'fa-check-circle' }}"></i>
+        {{ message }}
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+
+      {% if error %}
+      <div class="alert alert-error">
+        <i class="fas fa-exclamation-circle"></i> {{ error }}
+      </div>
+      {% endif %}
+
+      <form method="POST" action="{{ url_for('login') }}" autocomplete="on" novalidate>
+        <div class="field">
+          <label for="username">Username</label>
+          <div class="input-wrap">
+            <i class="fas fa-user input-icon"></i>
+            <input id="username" name="username" type="text" placeholder="Enter your username" required
+              autocomplete="username" autofocus aria-required="true" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <i class="fas fa-lock input-icon"></i>
+            <input id="password" name="password" type="password" placeholder="Enter your password" required
+              autocomplete="current-password" aria-required="true" />
+            <button type="button" class="toggle-pwd" id="togglePwd" aria-label="Toggle password visibility">
+              <i class="fas fa-eye" id="eyeIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label class="remember-label">
+            <input type="checkbox" name="remember" value="1"> Remember me
+          </label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+      </form>
+
+      <div class="form-footer">
+        Don't have an account? <a href="/register">Create one free</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const pwd = document.getElementById('password');
+    const toggleBtn = document.getElementById('togglePwd');
+    const eyeIcon = document.getElementById('eyeIcon');
+    toggleBtn.addEventListener('click', () => {
+      const shown = pwd.type === 'text';
+      pwd.type = shown ? 'password' : 'text';
+      eyeIcon.className = shown ? 'fas fa-eye' : 'fas fa-eye-slash';
+    });
+  </script>
+  <script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+
+</html>

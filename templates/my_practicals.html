@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Practicals</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    padding: 40px;
+    background: linear-gradient(135deg,#1f2937,#111827);
+    color: #f9fafb;
+    max-width: 1200px;
+    margin: auto;
+}
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 30px;
+    padding: 20px 30px;
+    background: linear-gradient(90deg,#4facfe,#00f2fe);
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    color: #fff;
+}
+header h2 { font-size: 28px; margin:0; }
+a.logout-link {
+    padding: 10px 22px;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+a.logout-link:hover { background: rgba(255,255,255,0.4); }
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 25px;
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: 600;
+}
+.back-link:hover { text-decoration: underline; }
+
+.card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    padding: 28px 32px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    margin-bottom: 30px;
+    transition: all 0.4s ease;
+}
+.card:hover { transform: translateY(-6px) scale(1.01); }
+.card h3 { margin-top:0; font-size:22px; margin-bottom:10px; color:#f1f5f9; }
+.card .subject-tag {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(56,189,248,0.15);
+    color: #38bdf8;
+    margin-bottom: 12px;
+}
+
+.meta-row {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin: 15px 0;
+    font-size: 14px;
+    color: #cbd5e1;
+}
+.meta-row b { color: #f9fafb; }
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 13px;
+}
+.status-Submitted { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.status-Checked, .status-checked { background: rgba(74,222,128,0.15); color: #4ade80; }
+
+.marks-box {
+    font-size: 16px;
+    font-weight: 700;
+    color: #4ade80;
+}
+.marks-pending { color: #94a3b8; font-weight: 500; }
+
+details {
+    margin-top: 15px;
+}
+summary {
+    cursor: pointer;
+    color: #38bdf8;
+    font-weight: 600;
+    font-size: 14px;
+}
+pre {
+    background: #0f172a;
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 10px;
+    overflow-x: auto;
+    font-size: 13px;
+    color: #e2e8f0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+}
+.empty-state a {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 22px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+}
+</style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+
+<header>
+  <h2>📂 My Practicals</h2>
+  <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+</header>
+
+<a href="{{ url_for('student_dashboard') }}" class="back-link">⬅ Back to Dashboard</a>
+
+<p>Total Submissions: {{ subs|length }}</p>
+
+{% if subs %}
+    {% for sub in subs %}
+    <div class="card">
+        {% if sub.practical_subject %}
+            <span class="subject-tag">{{ sub.practical_subject }}</span>
+        {% endif %}
+        <h3>
+            {% if sub.practical_no %}Practical {{ sub.practical_no }}: {% endif %}{{ sub.practical_title or "Unknown Practical" }}
+        </h3>
+
+        <div class="meta-row">
+            <span><b>Status:</b>
+                <span class="status-badge status-{{ sub.status }}">
+                    {% if sub.status == 'Checked' or sub.status == 'checked' %}✔ Checked{% else %}⏳ {{ sub.status }}{% endif %}
+                </span>
+            </span>
+            <span><b>Marks:</b>
+                {% if sub.marks is not none and sub.marks > 0 %}
+                    <span class="marks-box">{{ sub.marks }} / 100</span>
+                {% else %}
+                    <span class="marks-pending">Not graded yet</span>
+                {% endif %}
+            </span>
+            <span><b>Submitted:</b> {{ sub.submitted_at.strftime('%d-%m-%Y %H:%M') if sub.submitted_at else "—" }}</span>
+        </div>
+
+        {% if sub.code %}
+        <details>
+            <summary>👀 View my submitted code</summary>
+            <pre>{{ sub.code }}</pre>
+        </details>
+        {% endif %}
+
+        {% if sub.output %}
+        <details>
+            <summary>🖥 View output</summary>
+            <pre>{{ sub.output }}</pre>
+        </details>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <p>📭 You haven't submitted any practicals yet.</p>
+        <a href="{{ url_for('practicals') }}">Go to Practicals</a>
+    </div>
+{% endif %}
+
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

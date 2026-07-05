@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Results - {{ subject }}</title>  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+  <h2>Results for {{ subject }}</h2>
+  <p>Your Score: {{ score }}%</p>
+
+  {% if materials %}
+    <h3>Recommended Study Materials:</h3>
+    <ul>
+      {% for material in materials %}
+        <li>{{ material.material_type }}: <a href="{{ material.url }}" target="_blank">{{ material.title }}</a></li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No additional materials recommended.</p>
+  {% endif %}
+
+  <p><a href="{{ url_for('student_dashboard') }}">Back to Dashboard</a></p>
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Teacher Dashboard — SEPT AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0a0f1e;--navy-2:#0d1526;--navy-3:#111d35;
+  --blue:#1d4ed8;--blue-light:#3b82f6;
+  --cyan:#06b6d4;--cyan-light:#22d3ee;
+  --slate:#94a3b8;--slate-light:#cbd5e1;
+  --white:#f8fafc;
+  --green:#10b981;--green-light:#34d399;
+  --gold:#f59e0b;--gold-light:#fbbf24;
+  --purple:#8b5cf6;--purple-light:#a78bfa;
+  --danger:#f87171;
+  --grad-main:linear-gradient(135deg,#1d4ed8 0%,#06b6d4 100%);
+  --border:rgba(59,130,246,0.15);--border-soft:rgba(255,255,255,0.06);
+  --glow:0 0 30px rgba(29,78,216,0.18);
+  --radius:12px;--radius-lg:18px;
+  --sidebar-w:256px;
+  --transition:all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+html,body{height:100%}
+body{font-family:'Inter',sans-serif;background:var(--navy);color:var(--white);display:flex;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(29,78,216,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(29,78,216,0.04) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--navy)}
+::-webkit-scrollbar-thumb{background:var(--blue);border-radius:3px}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--navy-2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;overflow-y:auto}
+.sidebar-brand{display:flex;align-items:center;gap:11px;padding:26px 22px 22px;text-decoration:none;border-bottom:1px solid var(--border-soft)}
+.brand-icon{width:36px;height:36px;background:var(--grad-main);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#fff;box-shadow:0 4px 14px rgba(29,78,216,.4);flex-shrink:0}
+.brand-text{font-size:1rem;font-weight:800;letter-spacing:-.4px}
+.brand-text em{font-style:normal;background:var(--grad-main);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.sb-label{font-size:.62rem;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--slate);padding:18px 22px 6px}
+.sb-nav{flex:1;padding:6px 10px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:10px 13px;border-radius:10px;font-size:.85rem;font-weight:500;color:var(--slate-light);text-decoration:none;transition:var(--transition);margin-bottom:2px}
+.nav-item i{width:17px;text-align:center;font-size:.85rem}
+.nav-item:hover{background:rgba(59,130,246,.1);color:var(--white)}
+.nav-item.active{background:rgba(29,78,216,.2);color:var(--white);border:1px solid rgba(59,130,246,.25)}
+.nav-item.active i{color:var(--blue-light)}
+.nav-item.danger:hover{background:rgba(248,113,113,.1);color:var(--danger)}
+.sb-footer{padding:14px 22px;border-top:1px solid var(--border-soft)}
+.user-chip{display:flex;align-items:center;gap:10px}
+.user-av{width:32px;height:32px;background:linear-gradient(135deg,var(--cyan),var(--blue-light));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;flex-shrink:0}
+.user-info h6{font-size:.78rem;font-weight:700;color:var(--white)}
+.user-info span{font-size:.68rem;color:var(--slate);display:flex;align-items:center;gap:4px}
+.user-info span::before{content:'';width:5px;height:5px;background:var(--green);border-radius:50%;display:inline-block}
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;position:relative;z-index:1}
+.topbar{height:64px;background:var(--navy-2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:50}
+.topbar-left h1{font-size:1.05rem;font-weight:700;letter-spacing:-.3px}
+.topbar-left p{font-size:.72rem;color:var(--slate);margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-btn{display:flex;align-items:center;gap:7px;padding:7px 14px;border-radius:8px;font-size:.78rem;font-weight:600;text-decoration:none;transition:var(--transition);border:none;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap}
+.tb-ghost{background:rgba(255,255,255,.05);border:1px solid var(--border-soft);color:var(--slate-light)}
+.tb-ghost:hover{background:rgba(59,130,246,.1);color:var(--white)}
+.tb-primary{background:var(--grad-main);color:#fff;box-shadow:0 4px 14px rgba(29,78,216,.3)}
+.tb-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(29,78,216,.45)}
+.content{flex:1;padding:28px;overflow-x:hidden}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--navy-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;display:flex;align-items:center;gap:16px;transition:var(--transition);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;opacity:0;transition:var(--transition)}
+.stat-card:hover{transform:translateY(-3px);box-shadow:var(--glow)}
+.stat-card:hover::before{opacity:1}
+.sc-blue::before{background:var(--grad-main)}
+.sc-gold::before{background:linear-gradient(90deg,var(--gold),var(--gold-light))}
+.sc-green::before{background:linear-gradient(90deg,var(--green),var(--green-light))}
+.sc-purple::before{background:linear-gradient(90deg,var(--purple),var(--purple-light))}
+.stat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.si-blue{background:rgba(29,78,216,.2);color:var(--blue-light)}
+.si-gold{background:rgba(245,158,11,.2);color:var(--gold)}
+.si-green{background:rgba(16,185,129,.2);color:var(--green)}
+.si-purple{background:rgba(139,92,246,.2);color:var(--purple)}
+.stat-body .stat-num{font-size:1.55rem;font-weight:800;letter-spacing:-1px;line-height:1;color:var(--white)}
+.stat-body .stat-label{font-size:.72rem;color:var(--slate);margin-top:3px;font-weight:500}
+
+.dashboard-grid{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
+.tab-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.tab-btn{display:flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--border-soft);color:var(--slate-light);font-size:.82rem;font-weight:600;cursor:pointer;transition:var(--transition);font-family:'Inter',sans-serif}
+.tab-btn:hover{background:rgba(59,130,246,.1);color:var(--white)}
+.tab-btn.active{background:rgba(29,78,216,.2);border-color:rgba(59,130,246,.3);color:var(--white)}
+.tab-btn.active i{color:var(--blue-light)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+.panel{background:var(--navy-2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px}
+.panel:last-child{margin-bottom:0}
+.panel-header{padding:18px 22px;border-bottom:1px solid var(--border-soft);display:flex;align-items:center;gap:10px}
+.ph-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+.phi-blue{background:rgba(29,78,216,.2);color:var(--blue-light)}
+.phi-green{background:rgba(16,185,129,.2);color:var(--green)}
+.phi-gold{background:rgba(245,158,11,.2);color:var(--gold)}
+.phi-purple{background:rgba(139,92,246,.2);color:var(--purple)}
+.phi-cyan{background:rgba(6,182,212,.2);color:var(--cyan)}
+.panel-header h2{font-size:.9rem;font-weight:700;color:var(--white)}
+.panel-header p{font-size:.72rem;color:var(--slate);margin-top:1px}
+.panel-body{padding:20px 22px}
+.search-wrap{position:relative;margin-bottom:16px}
+.search-wrap i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--slate);font-size:.82rem;pointer-events:none}
+.search-wrap input{width:100%;padding:10px 14px 10px 36px;background:rgba(255,255,255,.04);border:1px solid var(--border-soft);border-radius:10px;color:var(--white);font-size:.85rem;font-family:'Inter',sans-serif;outline:none;transition:var(--transition)}
+.search-wrap input::placeholder{color:rgba(148,163,184,.45)}
+.search-wrap input:focus{border-color:var(--blue-light);background:rgba(59,130,246,.06);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+.student-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border-soft);border-radius:var(--radius);margin-bottom:8px;transition:var(--transition)}
+.student-item:hover{background:rgba(59,130,246,.06);border-color:rgba(59,130,246,.2)}
+.si-left{display:flex;align-items:center;gap:10px}
+.si-av{width:34px;height:34px;background:var(--grad-main);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:#fff;flex-shrink:0}
+.si-name{font-size:.85rem;font-weight:600;color:var(--white)}
+.si-meta{font-size:.72rem;color:var(--slate);margin-top:1px}
+.si-prog{width:120px}
+.prog-bar{height:5px;background:rgba(255,255,255,.07);border-radius:50px;overflow:hidden;margin-bottom:3px}
+.prog-fill{height:100%;border-radius:50px;background:var(--grad-main)}
+.prog-text{font-size:.68rem;color:var(--slate)}
+.si-actions{display:flex;gap:6px;flex-shrink:0}
+.btn-sm{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;font-size:.75rem;font-weight:600;text-decoration:none;transition:var(--transition);border:none;cursor:pointer;font-family:'Inter',sans-serif}
+.btn-outline{background:rgba(255,255,255,.05);border:1px solid var(--border-soft);color:var(--slate-light)}
+.btn-outline:hover{background:rgba(59,130,246,.1);color:var(--white)}
+.btn-primary-sm{background:var(--grad-main);color:#fff;box-shadow:0 3px 10px rgba(29,78,216,.3)}
+.btn-primary-sm:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(29,78,216,.45)}
+.no-results{font-size:.82rem;color:var(--slate);padding:12px;display:none}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.83rem;min-width:600px}
+thead tr{background:rgba(255,255,255,.03);border-bottom:1px solid var(--border-soft)}
+thead th{padding:11px 14px;font-size:.7rem;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--slate);white-space:nowrap}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:var(--transition)}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(59,130,246,.05)}
+tbody td{padding:12px 14px;color:var(--slate-light);vertical-align:middle}
+.score-badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:50px;font-size:.7rem;font-weight:700}
+.sb-high{background:rgba(16,185,129,.15);color:var(--green-light);border:1px solid rgba(16,185,129,.25)}
+.sb-mid{background:rgba(245,158,11,.15);color:var(--gold-light);border:1px solid rgba(245,158,11,.25)}
+.sb-low{background:rgba(248,113,113,.15);color:var(--danger);border:1px solid rgba(248,113,113,.25)}
+.status-badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:50px;font-size:.7rem;font-weight:700}
+.sb-checked{background:rgba(16,185,129,.15);color:var(--green-light);border:1px solid rgba(16,185,129,.25)}
+.sb-pending{background:rgba(245,158,11,.15);color:var(--gold-light);border:1px solid rgba(245,158,11,.25)}
+.right-col{display:flex;flex-direction:column;gap:16px}
+.circle-wrap{display:flex;flex-direction:column;align-items:center;padding:24px 20px}
+.circle-wrap h3{font-size:.85rem;font-weight:700;color:var(--white);margin-bottom:20px;text-align:center}
+.circle-svg-wrap{position:relative;width:140px;height:140px}
+.circle-svg-wrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.circle-bg{stroke:rgba(255,255,255,.06);stroke-width:12;fill:none}
+.circle-bar{stroke:url(#gradStroke);stroke-width:12;stroke-linecap:round;fill:none;transition:stroke-dashoffset 1s ease}
+.circle-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.4rem;font-weight:800;color:var(--white)}
+.top-student{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:rgba(255,255,255,.03);border:1px solid var(--border-soft);border-radius:10px;margin-bottom:8px;transition:var(--transition)}
+.top-student:hover{background:rgba(59,130,246,.06)}
+.ts-left{display:flex;align-items:center;gap:9px}
+.ts-av{width:28px;height:28px;background:var(--grad-main);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;color:#fff;flex-shrink:0}
+.ts-name{font-size:.82rem;font-weight:600;color:var(--white)}
+.ts-score{font-size:.78rem;font-weight:700;color:var(--cyan-light)}
+.flash-bar{display:flex;align-items:center;gap:10px;padding:11px 16px;border-radius:10px;font-size:.82rem;font-weight:500;margin-bottom:20px}
+.flash-success{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:var(--green-light)}
+.flash-danger{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--danger)}
+.flash-info{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:var(--blue-light)}
+@media(max-width:1100px){.dashboard-grid{grid-template-columns:1fr}.right-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}}
+@media(max-width:700px){.sidebar{transform:translateX(-100%)}.main{margin-left:0}.content{padding:16px}.topbar{padding:0 16px}.stats-row{grid-template-columns:1fr 1fr}.right-col{grid-template-columns:1fr}}
+select {
+  background: rgba(255,255,255,0.05);
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  outline: none;
+}
+
+select option {
+  background: #0a0f1e; /* dark background */
+  color: #ffffff;
+}
+
+/* ── RESPONSIVE: extra small-screen tweaks ── */
+@media(max-width:480px){
+  .stats-row{grid-template-columns:1fr !important}
+  .panel-body{padding:14px}
+  .panel-header{padding:14px}
+  table{min-width:520px}
+}
+
+/* ── RESPONSIVE: fix topbar clipping/overlap on small screens ── */
+@media(max-width:700px){
+  .topbar{height:auto !important;min-height:60px;padding:10px 16px !important;flex-wrap:nowrap;gap:8px}
+  .topbar-left{min-width:0;flex:1 1 auto;overflow:hidden}
+  .topbar-left h1{font-size:.92rem !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbar-left p{display:block !important;font-size:.68rem !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;width:100%}
+  .topbar-right{flex-shrink:0}
+  .topbar-badge, .tb-primary, .tb-ghost, .topbar-btn{padding:6px 10px !important;font-size:.7rem !important}
+  .sept-hamburger-btn{margin-right:4px}
+}
+@media(max-width:420px){
+  .topbar-right .topbar-badge span, .topbar-right .tb-ghost span{display:none}
+}
+
+/* ── RESPONSIVE: real fix for content pushed off-screen ──
+   Flex/grid children default to min-width:auto, so a wide table
+   or button row forces the whole column wider than the viewport
+   instead of scrolling internally. Setting min-width:0 lets every
+   container in the chain shrink properly; .table-wrap's own
+   overflow-x:auto then does the scrolling as intended. */
+.main, .content, .panel, .panel-body, .two-col, .two-col > *,
+.dashboard-grid, .dashboard-grid > *, .right-col, .right-col > *,
+.class-grid, .class-grid > *, .right-panel, .right-panel > *,
+.lb-grid, .lb-grid > *, .side-col, .side-col > *, .full-col,
+.stats-row, .stats-row > * {
+  min-width: 0;
+}
+.table-wrap { max-width: 100%; }
+</style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='responsive-fix.css') }}">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="/" class="sidebar-brand">
+    <div class="brand-icon"><i class="fas fa-brain"></i></div>
+    <span class="brand-text">SEPT <em>AI</em></span>
+  </a>
+  <div class="sb-label">Teacher Panel</div>
+  <nav class="sb-nav">
+    <a class="nav-item active" href="{{ url_for('teacher_dashboard') }}"><i class="fas fa-gauge-high"></i> Dashboard</a>
+    <a class="nav-item" href="{{ url_for('leaderboard') }}"><i class="fas fa-trophy"></i> Leaderboard</a>
+    <a class="nav-item" href="{{ url_for('view_notifications') }}"><i class="fas fa-bell"></i> Notifications</a>
+    <a class="nav-item" href="{{ url_for('send_notification') }}"><i class="fas fa-paper-plane"></i> Send Notification</a>
+    <a class="nav-item" href="{{ url_for('teacher_attendance') }}"><i class="fas fa-calendar-check"></i> Attendance</a>
+    <!--<a class="nav-item" href="{{ url_for('teacher_practicals') }}"><i class="fas fa-flask"></i> Practicals</a>-->
+    <div class="sb-label" style="padding-left:0;margin-top:6px">Community</div>
+    <a class="nav-item" href="{{ url_for('team_chat') }}"><i class="fas fa-comments"></i> Team Chat</a>
+    <a class="nav-item" href="{{ url_for('discussion') }}"><i class="fas fa-message"></i> Discussion</a>
+    <div class="sb-label" style="padding-left:0;margin-top:6px">Account</div>
+    <a class="nav-item danger" href="{{ url_for('logout') }}"><i class="fas fa-right-from-bracket"></i> Logout</a>
+  </nav>
+  <div class="sb-footer">
+    <div class="user-chip">
+      <div class="user-av">{{ session.get('username', 'T')[0].upper() }}</div>
+      <div class="user-info">
+        <h6>{{ session.get('username', 'Teacher') }}</h6>
+        <span>Teacher</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1>Teacher Dashboard</h1>
+      <p>Manage students, practicals and class performance</p>
+    </div>
+    <div class="topbar-right">
+      <a href="{{ url_for('export_csv') }}" class="topbar-btn tb-ghost"><i class="fas fa-file-csv"></i> Export CSV</a>
+      <a href="{{ url_for('teacher_practicals') }}" class="topbar-btn tb-primary"><i class="fas fa-flask"></i> Practicals</a>
+    </div>
+  </header>
+
+  <main class="content">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="flash-bar flash-{{ 'success' if cat == 'success' else 'danger' if cat == 'danger' else 'info' }}">
+          <i class="fas fa-{{ 'check-circle' if cat == 'success' else 'exclamation-circle' }}"></i> {{ msg }}
+        </div>
+      {% endfor %}
+    {% endwith %}
+
+    <!-- STAT CARDS -->
+    <div class="stats-row">
+      <div class="stat-card sc-blue">
+        <div class="stat-icon si-blue"><i class="fas fa-users"></i></div>
+        <div class="stat-body">
+          <div class="stat-num">{{ student_progress | length }}</div>
+          <div class="stat-label">Total Students</div>
+        </div>
+      </div>
+      <div class="stat-card sc-gold">
+        <div class="stat-icon si-gold"><i class="fas fa-chart-bar"></i></div>
+        <div class="stat-body">
+          <div class="stat-num">{{ overall_progress }}%</div>
+          <div class="stat-label">Class Average</div>
+        </div>
+      </div>
+      <div class="stat-card sc-green">
+        <div class="stat-icon si-green"><i class="fas fa-flask"></i></div>
+        <div class="stat-body">
+          <div class="stat-num">{{ practical_submissions | length }}</div>
+          <div class="stat-label">Practical Submissions</div>
+        </div>
+      </div>
+      <div class="stat-card sc-purple">
+        <div class="stat-icon si-purple"><i class="fas fa-code"></i></div>
+        <div class="stat-body">
+          <div class="stat-num">{{ subjects | length }}</div>
+          <div class="stat-label">Subjects Tracked</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="dashboard-grid">
+
+      <!-- LEFT TABS -->
+      <div>
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="switchTab('students',this)"><i class="fas fa-users"></i> Students</button>
+          <button class="tab-btn" onclick="switchTab('practicals',this)"><i class="fas fa-flask"></i> Practicals</button>
+          <button class="tab-btn" onclick="switchTab('subjects',this)"><i class="fas fa-chart-bar"></i> Subject Progress</button>
+          <button class="tab-btn" onclick="switchTab('attendance',this)"><i class="fas fa-calendar-check"></i> Attendance
+</button>
+        </div>
+
+        <!-- TAB: STUDENTS -->
+        <div class="tab-pane active" id="tab-students">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="ph-icon phi-blue"><i class="fas fa-users"></i></div>
+              <div><h2>All Students</h2><p>Performance overview</p></div>
+            </div>
+            <div class="panel-body">
+              <div class="search-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search students..." oninput="filterStudents(this.value)">
+              </div>
+              <div id="studentList">
+                {% for s in student_progress %}
+                <div class="student-item" data-name="{{ s.username | lower }}">
+                  <div class="si-left">
+                    <div class="si-av">{{ s.username[0].upper() }}</div>
+                    <div>
+                      <div class="si-name">{{ s.username }}</div>
+                      <div class="si-meta">Coding avg: {{ s.coding_avg }}% &bull; Participation: {{ s.participation }}</div>
+                    </div>
+                  </div>
+                  <div class="si-prog">
+                    <div class="prog-bar"><div class="prog-fill" data-w="{{ s.overall_student_progress }}"></div></div>
+                    <div class="prog-text">Overall: {{ s.overall_student_progress }}%</div>
+                  </div>
+                  <div class="si-actions">
+                    <a href="{{ url_for('student_profile', student_id=s.id) }}" class="btn-sm btn-outline"><i class="fas fa-eye"></i> View</a>
+                    <a href="{{ url_for('student_report', student_id=s.id) }}" class="btn-sm btn-primary-sm"><i class="fas fa-file-pdf"></i> Report</a>
+                  </div>
+                </div>
+                {% else %}
+                <p style="font-size:.85rem;color:var(--slate)">No students found.</p>
+                {% endfor %}
+                <p class="no-results" id="noResults">No students match your search.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: PRACTICALS -->
+        <div class="tab-pane" id="tab-practicals">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="ph-icon phi-green"><i class="fas fa-flask"></i></div>
+              <div><h2>Practical Submissions</h2><p>Latest student submissions</p></div>
+            </div>
+            <div class="panel-body">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Student</th>
+                      <th>Practical</th>
+                      <th>Marks</th>
+                      <th>Status</th>
+                      <th>Submitted</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for sub in practical_submissions %}
+                    <tr>
+                      <td style="color:var(--slate);font-size:.78rem">{{ loop.index }}</td>
+                      <td style="font-weight:600;color:var(--white)">{{ sub.student_name }}</td>
+                      <td>{{ sub.practical_title }}</td>
+                      <td>
+                        {% if sub.marks is not none %}
+                          <span class="score-badge {{ 'sb-high' if sub.marks >= 7 else 'sb-mid' if sub.marks >= 4 else 'sb-low' }}">{{ sub.marks }}/10</span>
+                        {% else %}
+                          <span style="color:var(--slate);font-size:.78rem">—</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <span class="status-badge {{ 'sb-checked' if sub.status == 'Checked' else 'sb-pending' }}">{{ sub.status }}</span>
+                      </td>
+                      <td style="font-size:.78rem;color:var(--slate)">{{ sub.submitted_at.strftime('%d %b, %H:%M') if sub.submitted_at else '—' }}</td>
+                      <td>
+                        <a href="{{ url_for('mark_practical', sid=sub.submission_id) }}"></td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="7" style="text-align:center;color:var(--slate);padding:24px">No submissions yet.</td></tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- TAB: ATTENDANCE -->
+<div class="tab-pane" id="tab-attendance">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="ph-icon phi-cyan"><i class="fas fa-calendar-check"></i></div>
+      <div>
+        <h2>Mark Attendance</h2>
+        <p>Select student and mark attendance</p>
+      </div>
+    </div>
+
+    <div class="panel-body">
+      {% for s in student_progress %}
+      <div class="student-item">
+        <div class="si-left">
+          <div class="si-av">{{ s.username[0].upper() }}</div>
+          <div>
+            <div class="si-name">{{ s.username }}</div>
+          </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('attendance_mark', student_id=s.id) }}">
+          <select name="status">
+            <option value="Present">Present</option>
+            <option value="Absent">Absent</option>
+          </select>
+
+          <button type="submit" class="btn-sm btn-primary-sm">
+            Mark
+          </button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+        <!-- TAB: SUBJECT PROGRESS -->
+        <div class="tab-pane" id="tab-subjects">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="ph-icon phi-gold"><i class="fas fa-chart-bar"></i></div>
+              <div><h2>Subject-wise Progress</h2><p>Per-student quiz averages by subject</p></div>
+            </div>
+            <div class="panel-body">
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Student</th>
+                      {% for subj in subjects %}
+                      <th>{{ subj }}</th>
+                      {% endfor %}
+                      <th>Report</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for s in student_progress %}
+                    <tr>
+                      <td style="font-weight:600;color:var(--white)">{{ s.username }}</td>
+                      {% for subj in subjects %}
+                      {% set score = s.quiz_progress.get(subj, 0) %}
+                      <td>
+                        <span class="score-badge {{ 'sb-high' if score >= 70 else 'sb-mid' if score >= 40 else 'sb-low' }}">{{ score }}%</span>
+                      </td>
+                      {% endfor %}
+                      <td>
+                        <a href="{{ url_for('student_report', student_id=s.id) }}" class="btn-sm btn-outline" target="_blank"><i class="fas fa-file-pdf"></i> PDF</a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end left col -->
+
+      <!-- RIGHT COLUMN -->
+      <div class="right-col">
+
+        <!-- Class Progress Circle -->
+        <div class="panel">
+          <div class="circle-wrap">
+            <h3>Class Progress</h3>
+            <div class="circle-svg-wrap">
+              <svg viewBox="0 0 140 140">
+                <defs>
+                  <linearGradient id="gradStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1d4ed8"/>
+                    <stop offset="100%" stop-color="#06b6d4"/>
+                  </linearGradient>
+                </defs>
+                <circle class="circle-bg" cx="70" cy="70" r="54"/>
+                <circle class="circle-bar" cx="70" cy="70" r="54"
+                  stroke-dasharray="339.3"
+                  stroke-dashoffset="{{ (339.3 - (339.3 * overall_progress / 100)) | round(1) }}"/>
+              </svg>
+              <div class="circle-label">{{ overall_progress }}%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Students -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="ph-icon phi-gold"><i class="fas fa-medal"></i></div>
+            <div><h2>Top Students</h2><p>By coding average</p></div>
+          </div>
+          <div class="panel-body">
+            {% for s in top_students %}
+            <div class="top-student">
+              <div class="ts-left">
+                <div class="ts-av">{{ s.username[0].upper() }}</div>
+                <span class="ts-name">{{ s.username }}</span>
+              </div>
+              <span class="ts-score">{{ s.coding_avg }}%</span>
+            </div>
+            {% else %}
+            <p style="font-size:.82rem;color:var(--slate)">No data yet.</p>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="ph-icon phi-cyan"><i class="fas fa-bolt"></i></div>
+            <div><h2>Quick Actions</h2></div>
+          </div>
+          <div class="panel-body" style="display:flex;flex-direction:column;gap:8px">
+            
+            <a href="{{ url_for('teacher_practicals') }}" class="btn-sm btn-outline" style="justify-content:center"><i class="fas fa-flask"></i> View Practicals</a>
+            <a href="{{ url_for('teacher_attendance') }}" class="btn-sm btn-outline" style="justify-content:center"><i class="fas fa-calendar-check"></i> Attendance Records</a>
+            <a href="{{ url_for('upload_quiz_csv') }}" class="btn-sm btn-outline" style="justify-content:center"><i class="fas fa-upload"></i> Upload Quiz CSV</a>
+            <a href="{{ url_for('add_challenge') }}" class="btn-sm btn-outline" style="justify-content:center"><i class="fas fa-laptop-code"></i> Add Coding Challenge</a>
+            <a href="{{ url_for('add_material') }}" class="btn-sm btn-outline" style="justify-content:center"><i class="fas fa-video"></i> Add Study Material / Video</a>
+            <a href="{{ url_for('export_csv') }}" class="btn-sm btn-primary-sm" style="justify-content:center"><i class="fas fa-file-csv"></i> Export Class Data</a>
+          </div>
+        </div>
+
+      </div><!-- end right col -->
+    </div><!-- end dashboard-grid -->
+
+  </main>
+</div>
+
+<script>
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+function filterStudents(val) {
+  const items = document.querySelectorAll('.student-item');
+  let found = 0;
+  items.forEach(item => {
+    const match = item.dataset.name.includes(val.toLowerCase());
+    item.style.display = match ? '' : 'none';
+    if (match) found++;
+  });
+  document.getElementById('noResults').style.display = found === 0 ? 'block' : 'none';
+}
+document.querySelectorAll('[data-w]').forEach(el => {
+  el.style.width = el.dataset.w + '%';
+});
+</script>
+<script src="{{ url_for('static', filename='theme-toggle.js') }}"></script>
+
+</body>
+</html>
