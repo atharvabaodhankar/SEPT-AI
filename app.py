@@ -40,6 +40,27 @@ def load_user(user_id): return User.query.get(int(user_id))
 # Visit: https://your-app.onrender.com/setup?key=YOUR_ADMIN_SECRET_KEY
 # Safe to call multiple times — skips anything that already exists.
 # ----------------------------
+@app.route('/debug-keys')
+def debug_keys():
+    def mask(name):
+        val = os.getenv(name, "")
+        if val == "":
+            return f"{name}: ❌ NOT SET (missing from environment)"
+        return (f"{name}: length={len(val)}, "
+                f"starts='{val[:2]}', ends='{val[-2:]}', "
+                f"has_leading_space={val != val.lstrip()}, "
+                f"has_trailing_space={val != val.rstrip()}")
+
+    lines = [
+        mask("ADMIN_SECRET_KEY"),
+        mask("TEACHER_SECRET_KEY"),
+        mask("SECRET_KEY"),
+        mask("DATABASE_URL"),
+        mask("OPENAI_API_KEY"),
+    ]
+    return "<pre>" + "\n".join(lines) + "</pre>"
+
+
 @app.route('/setup')
 def one_time_setup():
     key = request.args.get('key', '')
