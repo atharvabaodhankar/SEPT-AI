@@ -46,19 +46,16 @@ def debug_keys():
         val = os.getenv(name, "")
         if val == "":
             return f"{name}: ❌ NOT SET (missing from environment)"
-        return (f"{name}: length={len(val)}, "
-                f"starts='{val[:2]}', ends='{val[-2:]}', "
-                f"has_leading_space={val != val.lstrip()}, "
-                f"has_trailing_space={val != val.rstrip()}")
+        codepoints = " ".join(f"{ord(c):02x}" for c in val)
+        return (f"{name}: length={len(val)}\n"
+                f"  value='{val}'\n"
+                f"  hex_codepoints=[{codepoints}]")
 
     lines = [
         mask("ADMIN_SECRET_KEY"),
         mask("TEACHER_SECRET_KEY"),
-        mask("SECRET_KEY"),
-        mask("DATABASE_URL"),
-        mask("OPENAI_API_KEY"),
     ]
-    return "<pre>" + "\n".join(lines) + "</pre>"
+    return "<pre>" + "\n\n".join(lines) + "</pre>"
 
 
 @app.route('/setup')
