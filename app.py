@@ -1022,6 +1022,10 @@ def delete_user(user_id):
 def student_dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+    if session.get('role') == 'teacher':
+        return redirect(url_for('teacher_dashboard'))
+    if session.get('role') == 'admin':
+        return redirect(url_for('admin_dashboard'))
 
     student_id = session['user_id']
     student = db.session.get(User, student_id)
