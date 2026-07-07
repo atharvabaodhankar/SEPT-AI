@@ -40,24 +40,6 @@ def load_user(user_id): return User.query.get(int(user_id))
 # Visit: https://your-app.onrender.com/setup?key=YOUR_ADMIN_SECRET_KEY
 # Safe to call multiple times — skips anything that already exists.
 # ----------------------------
-@app.route('/debug-keys')
-def debug_keys():
-    def mask(name):
-        val = os.getenv(name, "")
-        if val == "":
-            return f"{name}: ❌ NOT SET (missing from environment)"
-        codepoints = " ".join(f"{ord(c):02x}" for c in val)
-        return (f"{name}: length={len(val)}\n"
-                f"  value='{val}'\n"
-                f"  hex_codepoints=[{codepoints}]")
-
-    lines = [
-        mask("ADMIN_SECRET_KEY"),
-        mask("TEACHER_SECRET_KEY"),
-    ]
-    return "<pre>" + "\n\n".join(lines) + "</pre>"
-
-
 @app.route('/setup')
 def one_time_setup():
     key = request.args.get('key', '')
@@ -939,7 +921,7 @@ def register():
             teacher_secret=request.form.get("teacher_secret","").strip()
             expected_teacher_secret=os.getenv("TEACHER_SECRET_KEY","").strip()
             if not expected_teacher_secret or teacher_secret!=expected_teacher_secret:
-                error=f"Invalid Teacher Key (you typed: len={len(teacher_secret)}, value='{teacher_secret}')"
+                error="Invalid Teacher Key"
                 return render_template('register.html',error=error)
         hashed=generate_password_hash(password)
         user=User(username=username,password=hashed,role=role)
