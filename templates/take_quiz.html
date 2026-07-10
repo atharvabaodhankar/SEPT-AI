@@ -264,12 +264,11 @@
     }
     countdown();
 
-    // Submit popup confirmation + success
+    // Submit popup confirmation
     document.getElementById("quizForm").addEventListener("submit", function(e) {
-      e.preventDefault(); // stop form for a moment
+      e.preventDefault();
       if(confirm("✅ Are you sure you want to submit the quiz?")) {
-        this.submit(); // continue with submission
-        alert("🎉 Quiz submitted successfully!");
+        this.submit(); // Server redirects to result page on success
       }
     });
   </script>

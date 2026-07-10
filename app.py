@@ -21,9 +21,26 @@ from openai import OpenAI
 load_dotenv()
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
-app.secret_key = os.getenv("SECRET_KEY", "fallback-secret-key")
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL",'postgresql://postgres:bappa19@localhost/adaptive_learning_db')
+
+# Require SECRET_KEY to be set — never fall back to a known string
+_secret = os.getenv("SECRET_KEY")
+if not _secret:
+    raise RuntimeError("SECRET_KEY environment variable must be set")
+app.secret_key = _secret
+
+# Require DATABASE_URL to be set — never fall back to a hardcoded password
+_db_url = os.getenv("DATABASE_URL")
+if not _db_url:
+    raise RuntimeError("DATABASE_URL environment variable must be set")
+app.config['SQLALCHEMY_DATABASE_URI'] = _db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Secure session cookie settings
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=8)
+
 db.init_app(app)
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -179,6 +196,7 @@ LANG_CONFIG = {
 # HELPERS
 # ----------------------------
 def normalize_output(s: str) -> str:
+    """Normalize code output for comparison: strip whitespace, unify line endings."""
     if not s:
         return ""
     s = s.replace("\r\n", "\n").replace("\r", "\n")
@@ -200,28 +218,31 @@ def analyze_weak_areas(student_id):
 def ai_generate_fix_list(topic, student_errors):
     try:
         prompt = f"Give 3 improvement steps for {topic}"
-
-        response = client.responses.create(
+        response = client.chat.completions.create(
             model="gpt-4o-mini",
-            input=prompt
+            messages=[{"role": "user", "content": prompt}]
         )
-
-        return response.output_text
-
+        return response.choices[0].message.content
     except Exception as e:
         print("AI ERROR:", e)
         return fallback_ai_fix(topic)
 
-def normalize_output(text):
-    return " ".join(text.strip().split())
-
-
+def normalize_output(s: str) -> str:
+    """Normalize code output for comparison: strip whitespace, unify line endings."""
+    if not s:
+        return ""
+    s = s.replace("\r\n", "\n").replace("\r", "\n")
+    lines = [" ".join(line.strip().split()) for line in s.split("\n")]
+    return "\n".join(lines).strip()
 
 def ai_generate_practice_tasks(topic, material):
     try:
         prompt = f"Give 3 simple practice tasks for {topic}."
-        response = client.responses.create(model="gpt-4o-mini", input=prompt)
-        return response.output_text.split("\n")
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return response.choices[0].message.content.split("\n")
     except Exception as e:
         print("AI ERROR (practice):", e)
         return ["🤖 ⚠️ AI is busy or error occurred."]
@@ -229,8 +250,11 @@ def ai_generate_practice_tasks(topic, material):
 def ai_generate_extra_questions(topic, material):
     try:
         prompt = f"Generate 3 simple MCQs for {topic}."
-        response = client.responses.create(model="gpt-4o-mini", input=prompt)
-        return response.output_text
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return response.choices[0].message.content
     except Exception as e:
         print("AI ERROR (questions):", e)
         return "🤖 ⚠️ AI is busy or error occurred."
@@ -239,11 +263,11 @@ def ai_generate_extra_questions(topic, material):
 def ai_generate_fix_list(topic, student_errors):
     try:
         prompt = f"Give 3 improvement steps for {topic}"
-        response = client.responses.create(
+        response = client.chat.completions.create(
             model="gpt-4o-mini",
-            input=prompt
+            messages=[{"role": "user", "content": prompt}]
         )
-        return response.output_text
+        return response.choices[0].message.content
     except Exception as e:
         print("AI ERROR:", e)
         return "🤖 ⚠️ AI is busy or error occurred."
@@ -379,23 +403,14 @@ def fallback_ai_fix(topic):
 def ai_generate_fix_list(topic, student_errors):
     try:
         prompt = f"Give 3 improvement steps for {topic}"
-
-        response = client.responses.create(
+        response = client.chat.completions.create(
             model="gpt-4o-mini",
-            input=prompt
+            messages=[{"role": "user", "content": prompt}]
         )
-
-        # Return the AI output
-        return response.output_text
-
+        return response.choices[0].message.content
     except Exception as e:
         print("AI ERROR:", e)
-        # Fallback with links
         return fallback_ai_fix(topic)
-
-
-    items = tips.get(topic, ["Revise basics", "Practice daily", "Solve examples"])
-    return "<ul>" + "".join(f"<li>{i}</li>" for i in items) + "</ul>"
 
 def suggestion_links(topic):
     """Return a list of (suggestion, link) tuples for a given topic."""
@@ -1899,8 +1914,8 @@ def run_code_executor(language, code):
         response = requests.post(
             "https://api.jdoodle.com/v1/execute",
             json={
-                "clientId": "e61b828da0b1e82bf21ba938b7fa0bb0",
-                "clientSecret": "e8874a7350cc4c903a3642c122086017575d5ea2a5b45a5493fdbd7629809e10",
+                "clientId": os.getenv("JDOODLE_CLIENT_ID"),
+                "clientSecret": os.getenv("JDOODLE_CLIENT_SECRET"),
                 "script": code,
                 "language": jdoodle_lang,
                 "versionIndex": version
@@ -2411,3 +2426,15 @@ def logout():
 # ----------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
+
+# ----------------------------
+# ERROR HANDLERS (fixes #10)
+# ----------------------------
+@app.errorhandler(404)
+def not_found(e):
+    return render_template("404.html"), 404
+
+@app.errorhandler(500)
+def server_error(e):
+    return render_template("500.html"), 500

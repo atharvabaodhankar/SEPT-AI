@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 – Page Not Found</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='theme-override.css') }}">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; }
+    .card { background: rgba(255,255,255,0.92); border-radius: 20px; padding: 50px 40px; text-align: center; max-width: 480px; width: 100%; box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+    h1 { font-size: 80px; margin: 0; color: #667eea; }
+    h2 { color: #2c3e50; margin-bottom: 12px; }
+    p  { color: #666; margin-bottom: 28px; }
+    a  { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; padding: 12px 28px; border-radius: 12px; text-decoration: none; font-weight: 600; }
+    a:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>404</h1>
+    <h2>Page Not Found</h2>
+    <p>The page you're looking for doesn't exist or has been moved.</p>
+    <a href="{{ url_for('home') }}">← Go Home</a>
+  </div>
+</body>
+</html>

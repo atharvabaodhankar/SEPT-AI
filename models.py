@@ -29,10 +29,6 @@ class User(db.Model):
     def __repr__(self):
         return f"<User {self.username} ({self.role})>"
 
-
-    def __repr__(self):
-        return f"<User {self.username} ({self.role})>"
-
 class Course(db.Model):
     __tablename__ = "courses"
     id = db.Column(db.Integer, primary_key=True)
@@ -176,8 +172,8 @@ class PracticalSubmission(db.Model):
     __tablename__ = 'practical_submissions'
 
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, nullable=False)
-    practical_id = db.Column(db.Integer, nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    practical_id = db.Column(db.Integer, db.ForeignKey("practicals.id", ondelete="CASCADE"), nullable=False)
     code = db.Column(db.Text)
     output = db.Column(db.Text)
     marks = db.Column(db.Integer, default=0)

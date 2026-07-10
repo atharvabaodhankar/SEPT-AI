@@ -11,14 +11,12 @@
   <p>Your Score: {{ score }}%</p>
 
   {% if materials %}
-    <h3>Recommended Study Materials:</h3>
-    <h2>Study Materials for {{ subject }}</h2>
-<ul>
-{% for material in materials %}
-  <li><a href="{{ material.link }}" target="_blank">{{ material.title }}</a> ({{ material.level }})</li>
-{% endfor %}
-</ul>
-
+    <h3>Recommended Study Materials for {{ subject }}</h3>
+    <ul>
+      {% for material in materials %}
+        <li>{{ material.material_type }}: <a href="{{ material.link }}" target="_blank">{{ material.title }}</a> ({{ material.level }})</li>
+      {% endfor %}
+    </ul>
   {% else %}
     <p>No additional materials recommended.</p>
   {% endif %}
